@@ -1,7 +1,7 @@
 {
   "name": "@repo-atlas/core",
   "version": "0.1.0",
-  "description": "Core scanner and tree data model engine for RepoAtlas",
+  "description": "Core repository scanning engine and tree model for RepoAtlas",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -16,6 +16,13 @@
   "files": [
     "dist"
   ],
+  "sideEffects": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akshaykumar33/RepoAtlas.git",
+    "directory": "packages/core"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -25,7 +32,7 @@
   "dependencies": {
     "@repo-atlas/detector": "workspace:*",
     "@repo-atlas/utils": "workspace:*",
-    "ignore": "^6.0.2"
+    "ignore": "^5.3.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

@@ -1,7 +1,7 @@
 {
   "name": "@repo-atlas/config",
   "version": "0.1.0",
-  "description": "Configuration loader for RepoAtlas",
+  "description": "Configuration loader supporting repo-atlas.config.json and .repo-atlasrc",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -16,14 +16,18 @@
   "files": [
     "dist"
   ],
+  "sideEffects": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akshaykumar33/RepoAtlas.git",
+    "directory": "packages/config"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
-  },
-  "dependencies": {
-    "@repo-atlas/icons": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

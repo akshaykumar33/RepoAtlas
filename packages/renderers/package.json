@@ -1,7 +1,7 @@
 {
   "name": "@repo-atlas/renderers",
   "version": "0.1.0",
-  "description": "Pluggable output renderer system for RepoAtlas",
+  "description": "Multi-theme tree renderers for RepoAtlas (ASCII, Unicode, VSCode, Material, Nerd Font)",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -16,6 +16,13 @@
   "files": [
     "dist"
   ],
+  "sideEffects": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akshaykumar33/RepoAtlas.git",
+    "directory": "packages/renderers"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -25,9 +32,11 @@
   "dependencies": {
     "@repo-atlas/core": "workspace:*",
     "@repo-atlas/icons": "workspace:*",
-    "@repo-atlas/utils": "workspace:*"
+    "@repo-atlas/utils": "workspace:*",
+    "picocolors": "^1.0.0"
   },
   "devDependencies": {
+    "@types/node": "^20.11.0",
     "tsup": "^8.0.2",
     "typescript": "^5.4.2",
     "vitest": "^1.4.0"

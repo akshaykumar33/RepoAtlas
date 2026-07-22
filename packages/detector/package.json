@@ -1,7 +1,7 @@
 {
   "name": "@repo-atlas/detector",
   "version": "0.1.0",
-  "description": "Project type, framework, monorepo, and tool detector for RepoAtlas",
+  "description": "Project framework and language detector for RepoAtlas",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -16,14 +16,18 @@
   "files": [
     "dist"
   ],
+  "sideEffects": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akshaykumar33/RepoAtlas.git",
+    "directory": "packages/detector"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
-  },
-  "dependencies": {
-    "@repo-atlas/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
