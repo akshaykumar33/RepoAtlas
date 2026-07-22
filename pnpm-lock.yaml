@@ -152,6 +152,46 @@ importers:
         specifier: ^1.4.0
         version: 1.6.1(@types/node@20.19.43)(terser@5.49.0)
 
+  apps/vscode:
+    dependencies:
+      '@repo-atlas/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@repo-atlas/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@repo-atlas/detector':
+        specifier: workspace:*
+        version: link:../../packages/detector
+      '@repo-atlas/exporters':
+        specifier: workspace:*
+        version: link:../../packages/exporters
+      '@repo-atlas/icons':
+        specifier: workspace:*
+        version: link:../../packages/icons
+      '@repo-atlas/renderers':
+        specifier: workspace:*
+        version: link:../../packages/renderers
+      '@repo-atlas/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.0
+        version: 20.19.43
+      '@types/vscode':
+        specifier: ^1.80.0
+        version: 1.125.0
+      tsup:
+        specifier: ^8.0.2
+        version: 8.5.1(jiti@1.21.7)(postcss@8.5.22)(typescript@5.9.3)(yaml@2.9.0)
+      typescript:
+        specifier: ^5.4.2
+        version: 5.9.3
+      vitest:
+        specifier: ^1.4.0
+        version: 1.6.1(@types/node@20.19.43)(terser@5.49.0)
+
   packages/config:
     dependencies:
       '@repo-atlas/icons':
@@ -2500,6 +2540,9 @@ packages:
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
+
+  '@types/vscode@1.125.0':
+    resolution: {integrity: sha512-0icm/ZQAaism87P0ekHqi4/Ju9du+Tm0RUW+y7vqRsxY2cY0FNRX1nAnaW7nT6npPt2tfHiheZ55Zm9UhqonFA==}
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
@@ -10124,6 +10167,8 @@ snapshots:
   '@types/unist@2.0.11': {}
 
   '@types/unist@3.0.3': {}
+
+  '@types/vscode@1.125.0': {}
 
   '@types/ws@8.18.1':
     dependencies:

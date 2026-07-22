@@ -1,0 +1,133 @@
+{
+  "name": "@repo-atlas/vscode",
+  "displayName": "RepoAtlas - Repository Visualizer",
+  "description": "Transform any repository into beautiful, configurable visual project structures inside VSCode",
+  "version": "0.1.0",
+  "publisher": "repo-atlas",
+  "categories": [
+    "Visualization",
+    "Documentation",
+    "Other"
+  ],
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "activationEvents": [
+    "onCommand:repo-atlas.generate",
+    "onCommand:repo-atlas.preview",
+    "onCommand:repo-atlas.copyTree",
+    "onCommand:repo-atlas.exportTree",
+    "onCommand:repo-atlas.generateMarkdown",
+    "onCommand:repo-atlas.generateMermaid"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "repo-atlas.generate",
+        "title": "RepoAtlas: Generate Structure"
+      },
+      {
+        "command": "repo-atlas.preview",
+        "title": "RepoAtlas: Preview Structure"
+      },
+      {
+        "command": "repo-atlas.copyTree",
+        "title": "RepoAtlas: Copy Tree to Clipboard"
+      },
+      {
+        "command": "repo-atlas.exportTree",
+        "title": "RepoAtlas: Export Structure to File"
+      },
+      {
+        "command": "repo-atlas.generateMarkdown",
+        "title": "RepoAtlas: Generate Markdown"
+      },
+      {
+        "command": "repo-atlas.generateMermaid",
+        "title": "RepoAtlas: Generate Mermaid Diagram"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "repo-atlas.generate",
+          "group": "repo-atlas@1"
+        },
+        {
+          "command": "repo-atlas.preview",
+          "group": "repo-atlas@2"
+        },
+        {
+          "command": "repo-atlas.generateMarkdown",
+          "group": "repo-atlas@3"
+        },
+        {
+          "command": "repo-atlas.generateMermaid",
+          "group": "repo-atlas@4"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "RepoAtlas",
+      "properties": {
+        "repoAtlas.theme": {
+          "type": "string",
+          "default": "vscode",
+          "enum": [
+            "ascii",
+            "unicode",
+            "vscode",
+            "material",
+            "nerd-font",
+            "markdown",
+            "json",
+            "mermaid"
+          ],
+          "description": "Default theme renderer for RepoAtlas visualization"
+        },
+        "repoAtlas.maxDepth": {
+          "type": "number",
+          "default": 4,
+          "description": "Maximum directory recursion scan depth"
+        },
+        "repoAtlas.respectGitIgnore": {
+          "type": "boolean",
+          "default": true,
+          "description": "Respect .gitignore rules when scanning repositories"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@repo-atlas/config": "workspace:*",
+    "@repo-atlas/core": "workspace:*",
+    "@repo-atlas/detector": "workspace:*",
+    "@repo-atlas/exporters": "workspace:*",
+    "@repo-atlas/icons": "workspace:*",
+    "@repo-atlas/renderers": "workspace:*",
+    "@repo-atlas/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.80.0",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.2",
+    "vitest": "^1.4.0"
+  }
+}
