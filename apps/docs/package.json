@@ -3,48 +3,39 @@
   "version": "0.1.2",
   "private": true,
   "scripts": {
-    "docusaurus": "docusaurus",
-    "start": "docusaurus start",
-    "build": "tsup",
-    "build:docs": "docusaurus build",
-    "swizzle": "docusaurus swizzle",
-    "deploy": "docusaurus deploy",
-    "clear": "docusaurus clear",
-    "serve": "docusaurus serve",
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@docusaurus/core": "^3.1.1",
-    "@docusaurus/preset-classic": "^3.1.1",
-    "@mdx-js/react": "^3.0.0",
+    "@repoatlasdev/config": "workspace:*",
     "@repoatlasdev/core": "workspace:*",
+    "@repoatlasdev/detector": "workspace:*",
     "@repoatlasdev/exporters": "workspace:*",
     "@repoatlasdev/icons": "workspace:*",
     "@repoatlasdev/renderers": "workspace:*",
-    "clsx": "^2.1.0",
-    "prism-react-renderer": "^2.3.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "@repoatlasdev/utils": "workspace:*",
+    "canvas-confetti": "^1.9.3",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.1.9",
+    "lucide-react": "^0.378.0",
+    "next": "^14.2.3",
+    "next-themes": "^0.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^3.1.1",
-    "@docusaurus/types": "^3.1.1",
-    "@types/node": "^20.11.0",
-    "@types/react": "^18.2.66",
-    "tsup": "^8.0.2",
-    "typescript": "^5.4.2"
-  },
-  "browserslist": {
-    "production": [
-      ">0.5%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "@types/canvas-confetti": "^1.6.4",
+    "@types/node": "^20.12.7",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.5"
   },
   "engines": {
     "node": ">=18.0.0"

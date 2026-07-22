@@ -1,0 +1,30 @@
+{
+  "version": 4,
+  "routes": {
+    "/playground": {
+      "experimentalBypassFor": [
+        { "type": "header", "key": "Next-Action" },
+        { "type": "header", "key": "content-type", "value": "multipart/form-data;.*" }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/playground",
+      "dataRoute": "/playground.rsc"
+    },
+    "/": {
+      "experimentalBypassFor": [
+        { "type": "header", "key": "Next-Action" },
+        { "type": "header", "key": "content-type", "value": "multipart/form-data;.*" }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/",
+      "dataRoute": "/index.rsc"
+    }
+  },
+  "dynamicRoutes": {},
+  "notFoundRoutes": [],
+  "preview": {
+    "previewModeId": "a33c287c03ba431a5afdea08c757d970",
+    "previewModeSigningKey": "96c510da0df6fc6e71412f0fe88f3c6b369af18727ad2c8151fd833358229a26",
+    "previewModeEncryptionKey": "bb4c80289558a60dfd7ef42bc66ba2d84a39bf51875f7527a75c272ee0ffb26e"
+  }
+}
