@@ -1,5 +1,6 @@
 {
   "name": "repo-atlas-vscode",
+  "private": true,
   "displayName": "RepoAtlas - Repository Visualizer",
   "description": "Transform any repository into beautiful, configurable visual project structures inside VSCode",
   "version": "0.2.2",
