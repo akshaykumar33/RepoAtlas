@@ -2,7 +2,7 @@
   "name": "repo-atlas-vscode",
   "displayName": "RepoAtlas - Repository Visualizer",
   "description": "Transform any repository into beautiful, configurable visual project structures inside VSCode",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "repo-atlas",
   "repository": {
     "type": "git",
