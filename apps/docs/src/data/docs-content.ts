@@ -135,4 +135,54 @@ jobs:
 \`\`\`
 `,
   },
+  publishing: {
+    slug: 'publishing',
+    title: 'Publishing & Release Guide',
+    category: 'Maintainers',
+    description:
+      'Step-by-step procedures for building, releasing, and publishing RepoAtlas packages.',
+    readingTime: '3 min read',
+    lastUpdated: 'July 22, 2026',
+    content: `
+RepoAtlas packages are distributed across **npm** (core engine packages) and **Visual Studio Marketplace** (VS Code extension).
+
+### 📦 1. npm Package Publishing (@repoatlasdev/*)
+
+#### Automated Publishing via GitHub Actions
+Add your \`NPM_TOKEN\` to GitHub Repository Secrets. Whenever code is merged to \`main\` with a version bump or Changeset, GitHub Actions automatically publishes all packages:
+- \`@repoatlasdev/core\`
+- \`@repoatlasdev/renderers\`
+- \`@repoatlasdev/exporters\`
+- \`@repoatlasdev/icons\`
+- \`@repoatlasdev/config\`
+- \`@repoatlasdev/detector\`
+- \`@repoatlasdev/utils\`
+- \`@repoatlasdev/cli\`
+
+#### Manual Terminal Publishing
+To publish updated packages directly from terminal:
+\`\`\`bash
+pnpm build
+pnpm publish -r --access public --no-git-checks
+\`\`\`
+
+---
+
+### 🔌 2. VS Code Extension Publishing (codeBeyond / repo-atlas)
+
+The VS Code Extension is packaged into a \`.vsix\` installer file:
+
+\`\`\`bash
+# Build & package .vsix bundle
+pnpm --filter repo-atlas build
+cd apps/vscode
+npx -y @vscode/vsce package --no-dependencies --out repo-atlas-0.2.1.vsix
+\`\`\`
+
+#### Web Upload to Marketplace:
+1. Navigate to [Visual Studio Marketplace Manager](https://marketplace.visualstudio.com/manage/publishers/repo-atlas).
+2. Click **+ New extension** ➔ **Visual Studio Code**.
+3. Drag & drop the \`repo-atlas-0.2.1.vsix\` package to upload!
+`,
+  },
 };

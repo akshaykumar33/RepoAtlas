@@ -9,6 +9,7 @@ import {
   Clock,
   FolderTree,
   Layers,
+  Rocket,
   Search,
   Terminal,
 } from 'lucide-react';
@@ -22,6 +23,7 @@ export function generateStaticParams() {
     { slug: ['cli'] },
     { slug: ['config'] },
     { slug: ['github-action'] },
+    { slug: ['publishing'] },
   ];
 }
 
@@ -48,6 +50,7 @@ export default function DocsPage({ params }: { params: { slug?: string[] } }) {
     { slug: 'cli', title: 'CLI Reference', category: 'Core Modules' },
     { slug: 'config', title: 'Configuration File', category: 'Configuration' },
     { slug: 'github-action', title: 'GitHub Action', category: 'Integrations' },
+    { slug: 'publishing', title: 'Publishing Guide', category: 'Maintainers' },
   ];
 
   const currentIndex = navItems.findIndex((item) => item.slug === currentSlug);
@@ -154,6 +157,30 @@ export default function DocsPage({ params }: { params: { slug?: string[] } }) {
                   ))}
               </ul>
             </div>
+
+            <div>
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
+                <Rocket className="h-3.5 w-3.5 text-amber-400" /> Maintainers
+              </div>
+              <ul className="space-y-1">
+                {navItems
+                  .filter((i) => i.category === 'Maintainers')
+                  .map((item) => (
+                    <li key={item.slug}>
+                      <Link
+                        href={`/docs/${item.slug}`}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
+                          currentSlug === item.slug
+                            ? 'bg-primary/10 text-primary font-semibold border border-primary/30 shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                        }`}
+                      >
+                        <span>{item.title}</span>
+                      </Link>
+                    </li>
+                  ))}
+              </ul>
+            </div>
           </div>
         </aside>
 
@@ -240,7 +267,7 @@ export default function DocsPage({ params }: { params: { slug?: string[] } }) {
           </div>
 
           {/* Doc Actions (Client Component) */}
-          <DocActions slug={currentSlug} />
+          <DocActions _slug={currentSlug} />
         </main>
       </div>
     </div>
