@@ -4,6 +4,20 @@
   "description": "Transform any repository into beautiful, configurable visual project structures inside VSCode",
   "version": "0.2.0",
   "publisher": "repo-atlas",
+  "license": "MIT",
+  "keywords": [
+    "vscode",
+    "vscode-extension",
+    "repository-visualization",
+    "tree-structure",
+    "repo-atlas",
+    "markdown-generator",
+    "mermaid-diagrams"
+  ],
+  "homepage": "https://github.com/akshaykumar33/RepoAtlas#readme",
+  "bugs": {
+    "url": "https://github.com/akshaykumar33/RepoAtlas/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/akshaykumar33/RepoAtlas.git",
