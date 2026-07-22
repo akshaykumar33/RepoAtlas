@@ -1,0 +1,42 @@
+{
+  "name": "@repo-atlas/cli",
+  "version": "0.1.0",
+  "description": "Command-line interface for RepoAtlas",
+  "type": "module",
+  "bin": {
+    "repo-atlas": "./dist/index.cjs"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@repo-atlas/config": "workspace:*",
+    "@repo-atlas/core": "workspace:*",
+    "@repo-atlas/icons": "workspace:*",
+    "@repo-atlas/renderers": "workspace:*",
+    "@repo-atlas/utils": "workspace:*",
+    "commander": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.2",
+    "vitest": "^1.4.0"
+  }
+}
