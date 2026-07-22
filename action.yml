@@ -1,0 +1,84 @@
+name: 'RepoAtlas - Generate Repository Structure'
+description: 'Transform any repository into beautiful, configurable, documentation-ready project structures.'
+author: 'RepoAtlas Team'
+
+branding:
+  icon: 'folder'
+  color: 'blue'
+
+inputs:
+  target_dir:
+    description: 'Target directory to scan'
+    required: false
+    default: '.'
+  output_file:
+    description: 'Output file path'
+    required: false
+    default: 'PROJECT_STRUCTURE.md'
+  theme:
+    description: 'Rendering theme (unicode, vscode, material, nerd-font, ascii, markdown, json, mermaid)'
+    required: false
+    default: 'unicode'
+  icons:
+    description: 'Icon pack (emoji, vscode, material, nerd, none)'
+    required: false
+    default: 'emoji'
+  max_depth:
+    description: 'Maximum directory recursion depth'
+    required: false
+    default: '10'
+  generate_mermaid:
+    description: 'Generate a Mermaid diagram file alongside the structure'
+    required: false
+    default: 'false'
+  auto_commit:
+    description: 'Automatically commit generated files'
+    required: false
+    default: 'false'
+  commit_message:
+    description: 'Commit message when auto_commit is enabled'
+    required: false
+    default: 'docs: update project structure'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Install RepoAtlas CLI
+      shell: bash
+      run: npm install -g @repoatlasdev/cli
+
+    - name: Generate Structure
+      shell: bash
+      run: |
+        repo-atlas generate "${{ inputs.target_dir }}" \
+          --theme "${{ inputs.theme }}" \
+          --icons "${{ inputs.icons }}" \
+          --depth "${{ inputs.max_depth }}" \
+          --output "${{ inputs.output_file }}"
+
+    - name: Generate Mermaid Diagram
+      if: inputs.generate_mermaid == 'true'
+      shell: bash
+      run: |
+        repo-atlas generate "${{ inputs.target_dir }}" \
+          --theme mermaid \
+          --depth "${{ inputs.max_depth }}" \
+          --output "MERMAID.md"
+
+    - name: Auto Commit
+      if: inputs.auto_commit == 'true'
+      shell: bash
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add "${{ inputs.output_file }}" || true
+        if [ "${{ inputs.generate_mermaid }}" == "true" ]; then
+          git add "MERMAID.md" || true
+        fi
+        git diff --staged --quiet || git commit -m "${{ inputs.commit_message }}"
+        git push || true
