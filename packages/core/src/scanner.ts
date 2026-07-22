@@ -15,6 +15,8 @@ export async function scanRepository(options: ScanOptions): Promise<TreeNode> {
   const respectGitIgnore = options.respectGitIgnore ?? true;
   const followSymlinks = options.followSymlinks ?? false;
   const detectProject = options.detectProject ?? true;
+  const sortBy = options.sortBy ?? 'name';
+  const only = options.only ?? 'all';
 
   const ignoreFilter = new IgnoreFilter(options.ignorePatterns);
   if (respectGitIgnore) {
@@ -50,6 +52,13 @@ export async function scanRepository(options: ScanOptions): Promise<TreeNode> {
 
     // Check ignore filter
     if (ignoreFilter.isIgnored(relPath, isDirectory)) {
+      return null;
+    }
+
+    // Only filter check
+    if (only === 'files' && isDirectory && currentDepth > 0) {
+      // In 'files' only mode, we still scan subdirectories to find files, but filter empty directories afterwards
+    } else if (only === 'directories' && !isDirectory) {
       return null;
     }
 
@@ -134,7 +143,7 @@ export async function scanRepository(options: ScanOptions): Promise<TreeNode> {
       }
     }
 
-    node.children = sortTreeNodes(children);
+    node.children = sortTreeNodes(children, sortBy);
     (node.metadata as DirectoryMetadata).fileCount = fileCount;
     (node.metadata as DirectoryMetadata).directoryCount = directoryCount;
     (node.metadata as DirectoryMetadata).totalSizeBytes = totalSizeBytes;

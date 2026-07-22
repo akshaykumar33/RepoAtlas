@@ -1,6 +1,8 @@
 import { ProjectInfo } from '@repo-atlas/detector';
 
 export type NodeType = 'file' | 'directory' | 'symlink';
+export type SortOption = 'name' | 'size' | 'type' | 'date';
+export type OnlyOption = 'files' | 'directories' | 'all';
 
 export interface FileMetadata {
   sizeBytes: number;
@@ -39,6 +41,8 @@ export interface ScanOptions {
   ignorePatterns?: string[];
   includePatterns?: string[];
   excludePatterns?: string[];
+  only?: OnlyOption;
+  sortBy?: SortOption;
   includeHidden?: boolean;
   respectGitIgnore?: boolean;
   followSymlinks?: boolean;
