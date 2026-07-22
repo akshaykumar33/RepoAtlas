@@ -1,4 +1,4 @@
-export type IconPack = 'emoji' | 'unicode' | 'plain';
+export type IconPack = 'emoji' | 'unicode' | 'plain' | 'ascii' | 'vscode' | 'material' | 'nerd';
 
 export interface IconMapping {
   folder: string;

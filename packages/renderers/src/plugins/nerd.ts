@@ -1,14 +1,14 @@
 import { TreeNode } from '@repo-atlas/core';
 import { BaseTreeRenderer } from '../engine/base';
-import { ASCII_THEME } from '../theme/presets';
+import { NERD_FONT_THEME } from '../theme/presets';
 import { RenderOptions, RenderedOutput, RendererPlugin } from '../types';
 
-export const asciiRendererPlugin: RendererPlugin = {
-  name: 'ascii',
-  description: 'ASCII text tree renderer',
+export const nerdFontRendererPlugin: RendererPlugin = {
+  name: 'nerd-font',
+  description: 'Nerd Font developer glyph tree renderer',
   fileExtension: 'txt',
   render(tree: TreeNode, options?: RenderOptions): RenderedOutput {
     const baseRenderer = new BaseTreeRenderer();
-    return baseRenderer.renderTree(tree, options, ASCII_THEME);
+    return baseRenderer.renderTree(tree, options, NERD_FONT_THEME);
   },
 };

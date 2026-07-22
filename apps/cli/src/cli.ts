@@ -1,6 +1,6 @@
 import { Command } from 'commander';
-import { generateCommand } from './commands/generate';
 import { doctorCommand } from './commands/doctor';
+import { generateCommand } from './commands/generate';
 import { initCommand } from './commands/init';
 
 export function createCli(): Command {
@@ -17,12 +17,18 @@ export function createCli(): Command {
     .description('Generate visualization for target repository directory')
     .option(
       '-f, --format <format>',
-      'Output format (unicode, ascii, markdown, json, mermaid)',
+      'Output format (unicode, ascii, vscode, material, nerd-font, markdown, json, mermaid)',
       'unicode'
     )
     .option('-d, --depth <depth>', 'Maximum directory scan depth', (val) => parseInt(val, 10))
-    .option('-i, --icon-pack <pack>', 'Icon pack (emoji, unicode, plain)', 'emoji')
+    .option(
+      '-i, --icon-pack <pack>',
+      'Icon pack (emoji, unicode, plain, ascii, vscode, material, nerd)',
+      'emoji'
+    )
     .option('-s, --show-size', 'Display file sizes')
+    .option('-c, --compact', 'Collapse single-child folder chains into single line paths')
+    .option('--color', 'Enable colored terminal output')
     .option('-o, --output <file>', 'Save output to specified file path')
     .action(async (dir, options) => {
       try {

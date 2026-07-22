@@ -42,10 +42,79 @@ const PLAIN_PACK: IconMapping = {
   filenames: {},
 };
 
+const VSCODE_PACK: IconMapping = {
+  folder: '📁',
+  folderOpen: '📂',
+  file: '📄',
+  extensions: {
+    ts: '',
+    tsx: '',
+    js: '',
+    jsx: '',
+    json: '',
+    md: '',
+    yml: '',
+    yaml: '',
+    css: '',
+    html: '',
+  },
+  filenames: {
+    'package.json': '',
+    'tsconfig.json': '',
+    'README.md': '📖',
+  },
+};
+
+const MATERIAL_PACK: IconMapping = {
+  folder: '📂',
+  folderOpen: '📂',
+  file: '📄',
+  extensions: {
+    ts: '󰛦',
+    tsx: '󰜞',
+    js: '󰌞',
+    jsx: '󰜞',
+    json: '󰘦',
+    md: '󰍔',
+    css: '󰌜',
+    html: '󰌝',
+  },
+  filenames: {
+    'package.json': '󰏗',
+    'tsconfig.json': '󰛦',
+  },
+};
+
+const NERD_PACK: IconMapping = {
+  folder: '📁',
+  folderOpen: '📂',
+  file: '📄',
+  extensions: {
+    ts: '',
+    tsx: '',
+    js: '',
+    jsx: '',
+    json: '',
+    md: '',
+    py: '',
+    rs: '',
+    go: '',
+  },
+  filenames: {
+    'package.json': '',
+    'tsconfig.json': '',
+    Dockerfile: '',
+  },
+};
+
 const PACKS: Record<IconPack, IconMapping> = {
   emoji: EMOJI_PACK,
   unicode: UNICODE_PACK,
   plain: PLAIN_PACK,
+  ascii: PLAIN_PACK,
+  vscode: VSCODE_PACK,
+  material: MATERIAL_PACK,
+  nerd: NERD_PACK,
 };
 
 export class IconResolver {

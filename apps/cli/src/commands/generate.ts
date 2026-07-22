@@ -8,8 +8,10 @@ import { RendererRegistry } from '@repo-atlas/renderers';
 export interface GenerateCmdOptions {
   format?: string;
   depth?: number;
-  iconPack?: 'emoji' | 'unicode' | 'plain';
+  iconPack?: 'emoji' | 'unicode' | 'plain' | 'ascii' | 'vscode' | 'material' | 'nerd';
   showSize?: boolean;
+  compact?: boolean;
+  color?: boolean;
   output?: string;
 }
 
@@ -38,6 +40,8 @@ export async function generateCommand(
 
   const rendered = await registry.render(config.format, tree, {
     showSize: config.showSize,
+    compact: options.compact ?? false,
+    useColor: options.color ?? false,
     iconResolver,
   });
 

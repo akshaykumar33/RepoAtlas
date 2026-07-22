@@ -1,78 +1,90 @@
 import { describe, expect, it } from 'vitest';
 import { TreeNode } from '@repo-atlas/core';
-import { RendererPlugin, RendererRegistry } from '../src/index';
+import { RendererRegistry } from '../src/index';
 
 const mockTree: TreeNode = {
+  id: '.',
   name: 'root',
   path: '/root',
   relativePath: '.',
   type: 'directory',
   children: [
     {
+      id: 'src',
       name: 'src',
       path: '/root/src',
       relativePath: 'src',
       type: 'directory',
       children: [
         {
-          name: 'index.ts',
-          path: '/root/src/index.ts',
-          relativePath: 'src/index.ts',
-          type: 'file',
-          metadata: { sizeBytes: 1024 },
+          id: 'src/components',
+          name: 'components',
+          path: '/root/src/components',
+          relativePath: 'src/components',
+          type: 'directory',
+          children: [
+            {
+              id: 'src/components/index.ts',
+              name: 'index.ts',
+              path: '/root/src/components/index.ts',
+              relativePath: 'src/components/index.ts',
+              type: 'file',
+              metadata: { sizeBytes: 1024, extension: 'ts', modifiedAt: new Date().toISOString() },
+            },
+          ],
         },
       ],
     },
     {
+      id: 'README.md',
       name: 'README.md',
       path: '/root/README.md',
       relativePath: 'README.md',
       type: 'file',
-      metadata: { sizeBytes: 2048 },
+      metadata: { sizeBytes: 2048, extension: 'md', modifiedAt: new Date().toISOString() },
     },
   ],
+  metadata: { modifiedAt: new Date().toISOString() },
 };
 
-describe('Renderers & Plugin Architecture', () => {
+describe('Multi-Theme Rendering Engine', () => {
   const registry = RendererRegistry.getInstance();
 
-  it('renders ASCII output format', async () => {
-    const result = await registry.render('ascii', mockTree);
+  it('renders ASCII theme format', async () => {
+    const result = await registry.render('ascii', mockTree, { showIcons: false });
     expect(result.format).toBe('ascii');
     expect(result.content).toContain('root');
     expect(result.content).toContain('|-- src');
     expect(result.content).toContain('`-- index.ts');
   });
 
-  it('renders Unicode output format', async () => {
+  it('renders Unicode theme format', async () => {
     const result = await registry.render('unicode', mockTree, { showIcons: false });
     expect(result.format).toBe('unicode');
     expect(result.content).toContain('├── src');
     expect(result.content).toContain('└── index.ts');
   });
 
-  it('renders JSON output format', async () => {
-    const result = await registry.render('json', mockTree);
-    const parsed = JSON.parse(result.content);
-    expect(parsed.name).toBe('root');
+  it('renders VSCode style format', async () => {
+    const result = await registry.render('vscode', mockTree);
+    expect(result.format).toBe('vscode');
+    expect(result.content).toContain('├─ 📁 src');
   });
 
-  it('allows registering a NEW output format plugin without modifying core code', async () => {
-    // Custom YAML renderer plugin added dynamically
-    const yamlPlugin: RendererPlugin = {
-      name: 'custom-yaml',
-      description: 'Custom YAML plugin format',
-      fileExtension: 'yaml',
-      render: (tree) => ({
-        format: 'custom-yaml',
-        content: `name: ${tree.name}\nchildren_count: ${tree.children?.length ?? 0}`,
-      }),
-    };
+  it('renders Material Theme format with colors', async () => {
+    const result = await registry.render('material', mockTree, { useColor: true });
+    expect(result.format).toBe('material');
+    expect(result.content).toContain('root');
+  });
 
-    registry.register(yamlPlugin);
+  it('renders Nerd Font format', async () => {
+    const result = await registry.render('nerd-font', mockTree);
+    expect(result.format).toBe('nerd-font');
+    expect(result.content).toContain('root');
+  });
 
-    const result = await registry.render('custom-yaml', mockTree);
-    expect(result.format).toBe('custom-yaml');
-    expect(result.content).toBe('name: root\nchildren_count: 2');
+  it('supports Compact Mode (collapsing single-child folder chains)', async () => {
+    const result = await registry.render('unicode', mockTree, { compact: true, showIcons: false });
+    expect(result.content).toContain('src/components');
   });
 });

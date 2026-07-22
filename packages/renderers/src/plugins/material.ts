@@ -1,14 +1,14 @@
 import { TreeNode } from '@repo-atlas/core';
 import { BaseTreeRenderer } from '../engine/base';
-import { ASCII_THEME } from '../theme/presets';
+import { MATERIAL_THEME } from '../theme/presets';
 import { RenderOptions, RenderedOutput, RendererPlugin } from '../types';
 
-export const asciiRendererPlugin: RendererPlugin = {
-  name: 'ascii',
-  description: 'ASCII text tree renderer',
+export const materialRendererPlugin: RendererPlugin = {
+  name: 'material',
+  description: 'Material Theme tree renderer with vibrant colors',
   fileExtension: 'txt',
   render(tree: TreeNode, options?: RenderOptions): RenderedOutput {
     const baseRenderer = new BaseTreeRenderer();
-    return baseRenderer.renderTree(tree, options, ASCII_THEME);
+    return baseRenderer.renderTree(tree, options, MATERIAL_THEME);
   },
 };
