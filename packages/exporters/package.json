@@ -1,6 +1,6 @@
 {
   "name": "@repoatlasdev/exporters",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Multi-format exporter plugins for RepoAtlas project trees (HTML, Markdown, SVG, Mermaid, DOCX, PDF, CSV, etc.)",
   "type": "module",
   "main": "./dist/index.cjs",

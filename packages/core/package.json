@@ -1,6 +1,6 @@
 {
   "name": "@repoatlasdev/core",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Core repository scanning engine and tree model for RepoAtlas",
   "type": "module",
   "main": "./dist/index.cjs",

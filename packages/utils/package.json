@@ -1,6 +1,6 @@
 {
   "name": "@repoatlasdev/utils",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Pure path and string formatting helper utilities for RepoAtlas",
   "type": "module",
   "main": "./dist/index.cjs",

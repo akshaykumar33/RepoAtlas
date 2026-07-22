@@ -1,6 +1,6 @@
 {
   "name": "@repoatlasdev/icons",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Icon mappings for RepoAtlas themes (Emoji, VSCode, Material, Nerd Font)",
   "type": "module",
   "main": "./dist/index.cjs",

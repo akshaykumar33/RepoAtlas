@@ -1,6 +1,6 @@
 {
   "name": "@repoatlasdev/cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Professional Commander.js CLI suite for RepoAtlas visual tree generation and diagnostics",
   "type": "module",
   "bin": {

@@ -1,5 +1,14 @@
 # @repoatlasdev/core
 
+## 0.2.1
+
+### Patch Changes
+
+- Add README documentation, license, and keywords metadata to all packages.
+- Updated dependencies
+  - @repoatlasdev/detector@0.2.1
+  - @repoatlasdev/utils@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes
