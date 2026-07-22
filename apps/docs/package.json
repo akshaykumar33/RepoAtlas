@@ -1,7 +1,7 @@
 {
   "name": "@repo-atlas/docs",
   "version": "0.1.0",
-  "description": "Documentation site for RepoAtlas developer platform",
+  "description": "Documentation website and interactive tools for RepoAtlas",
   "private": true,
   "type": "module",
   "main": "./dist/index.cjs",
@@ -15,17 +15,36 @@
     }
   },
   "scripts": {
+    "docusaurus": "docusaurus",
+    "start": "docusaurus start",
     "build": "tsup",
-    "dev": "tsup --watch",
+    "build:site": "docusaurus build",
+    "serve": "docusaurus serve",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
+    "@docusaurus/core": "^3.2.1",
+    "@docusaurus/preset-classic": "^3.2.1",
+    "@mdx-js/react": "^3.0.1",
     "@repo-atlas/config": "workspace:*",
     "@repo-atlas/core": "workspace:*",
-    "@repo-atlas/renderers": "workspace:*"
+    "@repo-atlas/detector": "workspace:*",
+    "@repo-atlas/exporters": "workspace:*",
+    "@repo-atlas/icons": "workspace:*",
+    "@repo-atlas/renderers": "workspace:*",
+    "@repo-atlas/utils": "workspace:*",
+    "clsx": "^2.1.0",
+    "prism-react-renderer": "^2.3.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@docusaurus/module-type-aliases": "^3.2.1",
+    "@docusaurus/types": "^3.2.1",
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
     "tsup": "^8.0.2",
     "typescript": "^5.4.2",
     "vitest": "^1.4.0"
