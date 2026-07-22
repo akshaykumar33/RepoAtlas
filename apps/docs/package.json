@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
-    "prebuild": "pnpm --filter \"@repoatlasdev/*\" build",
+    "prebuild": "pnpm --filter \"./packages/*\" build",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
