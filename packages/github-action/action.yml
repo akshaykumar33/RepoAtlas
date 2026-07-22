@@ -1,0 +1,70 @@
+name: 'RepoAtlas Visual Project Structure Generator'
+description: 'Automatically generate beautiful visual project structures and Mermaid architecture diagrams in GitHub workflows'
+author: 'akshaykumar33'
+branding:
+  icon: 'archive'
+  color: 'blue'
+
+inputs:
+  target_dir:
+    description: 'Path to target repository directory'
+    required: false
+    default: '.'
+  output_file:
+    description: 'Target output filename'
+    required: false
+    default: 'PROJECT_STRUCTURE.md'
+  theme:
+    description: 'Theme preset (unicode, ascii, vscode, material, nerd-font, markdown, json, mermaid)'
+    required: false
+    default: 'unicode'
+  icons:
+    description: 'Icon pack preset (emoji, unicode, plain, ascii, vscode, material, nerd)'
+    required: false
+    default: 'emoji'
+  depth:
+    description: 'Maximum directory scan depth'
+    required: false
+    default: ''
+  sort:
+    description: 'Sort order (name, size, type, date)'
+    required: false
+    default: 'name'
+  only:
+    description: 'Limit display to files or directories (all, files, directories)'
+    required: false
+    default: 'all'
+  exclude:
+    description: 'Comma or space separated exclude glob patterns'
+    required: false
+    default: ''
+  include:
+    description: 'Comma or space separated include glob patterns'
+    required: false
+    default: ''
+  compact:
+    description: 'Collapse single-child directory chains'
+    required: false
+    default: 'false'
+  generate_mermaid:
+    description: 'Generate additional MERMAID.md diagram file'
+    required: false
+    default: 'false'
+  auto_commit:
+    description: 'Automatically commit generated files to git repository'
+    required: false
+    default: 'true'
+  commit_message:
+    description: 'Git commit message'
+    required: false
+    default: 'docs(repo-atlas): update project structure visualizer'
+
+outputs:
+  structure_file:
+    description: 'Path to generated project structure markdown file'
+  mermaid_file:
+    description: 'Path to generated mermaid diagram file if enabled'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.cjs'

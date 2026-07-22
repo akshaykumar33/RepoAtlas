@@ -1,0 +1,48 @@
+{
+  "name": "@repoatlasdev/github-action",
+  "version": "0.1.0",
+  "description": "Official RepoAtlas GitHub Action for automated repository tree visualization and Mermaid diagrams",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "action.yml"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akshaykumar33/RepoAtlas.git",
+    "directory": "packages/github-action"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@actions/exec": "^1.1.1",
+    "@repoatlasdev/config": "workspace:*",
+    "@repoatlasdev/core": "workspace:*",
+    "@repoatlasdev/exporters": "workspace:*",
+    "@repoatlasdev/icons": "workspace:*",
+    "@repoatlasdev/renderers": "workspace:*",
+    "@repoatlasdev/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.2",
+    "vitest": "^1.4.0"
+  }
+}

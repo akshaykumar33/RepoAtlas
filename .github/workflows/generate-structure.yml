@@ -1,0 +1,23 @@
+name: Generate Repository Structure
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  update-structure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run RepoAtlas Action
+        uses: akshaykumar33/RepoAtlas@main
+        with:
+          target_dir: '.'
+          output_file: 'PROJECT_STRUCTURE.md'
+          theme: 'unicode'
+          icons: 'emoji'
+          generate_mermaid: 'true'
+          auto_commit: 'true'
+          commit_message: 'docs(repo-atlas): update project structure & mermaid diagram'
