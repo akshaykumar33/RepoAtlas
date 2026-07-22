@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
-    "prebuild": "pnpm --filter \"./packages/*\" build",
+    "prebuild": "pnpm --filter \"@repoatlasdev/core\" --filter \"@repoatlasdev/renderers\" --filter \"@repoatlasdev/exporters\" --filter \"@repoatlasdev/icons\" --filter \"@repoatlasdev/config\" --filter \"@repoatlasdev/detector\" --filter \"@repoatlasdev/utils\" build",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

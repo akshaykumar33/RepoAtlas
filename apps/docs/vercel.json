@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "buildCommand": "pnpm --filter \"./packages/*\" build && next build",
+  "buildCommand": "pnpm --filter \"@repoatlasdev/core\" --filter \"@repoatlasdev/renderers\" --filter \"@repoatlasdev/exporters\" --filter \"@repoatlasdev/icons\" --filter \"@repoatlasdev/config\" --filter \"@repoatlasdev/detector\" --filter \"@repoatlasdev/utils\" build && next build",
   "outputDirectory": ".next"
 }
