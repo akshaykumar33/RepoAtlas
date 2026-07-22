@@ -17,7 +17,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "license": "MIT",
   "repository": {

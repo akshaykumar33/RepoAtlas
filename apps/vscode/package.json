@@ -1,5 +1,5 @@
 {
-  "name": "repo-atlas-vscode",
+  "name": "@repoatlasdev/vscode",
   "displayName": "RepoAtlas - Repository Visualizer",
   "description": "Transform any repository into beautiful, configurable visual project structures inside VSCode",
   "version": "0.2.1",
@@ -40,6 +40,11 @@
       "require": "./dist/index.js"
     }
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "activationEvents": [
     "onCommand:repo-atlas.generate",
     "onCommand:repo-atlas.preview",

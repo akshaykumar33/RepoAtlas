@@ -15,7 +15,8 @@
   },
   "files": [
     "dist",
-    "action.yml"
+    "README.md",
+    "LICENSE"
   ],
   "license": "MIT",
   "repository": {
