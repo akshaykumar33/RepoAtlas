@@ -1,0 +1,36 @@
+{
+  "name": "@repo-atlas/exporters",
+  "version": "0.1.0",
+  "description": "Multi-format exporter plugins for RepoAtlas project trees",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@repo-atlas/core": "workspace:*",
+    "@repo-atlas/renderers": "workspace:*",
+    "@repo-atlas/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.2",
+    "vitest": "^1.4.0"
+  }
+}
