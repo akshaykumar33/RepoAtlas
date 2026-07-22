@@ -1,6 +1,7 @@
 node_modules
 dist
 .turbo
+.next
 .docusaurus
 .cache
 build
@@ -9,3 +10,4 @@ coverage
 .DS_Store
 .vercel
 .env*
+*.vsix

@@ -13,6 +13,7 @@ export default tseslint.config(
       'apps/docs/.cache/**',
       'apps/docs/build/**',
       '**/*.vsix',
+      '**/*.config.js',
     ],
   },
   eslint.configs.recommended,
