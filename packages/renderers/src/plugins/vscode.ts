@@ -1,14 +1,38 @@
-import { TreeNode } from '@repo-atlas/core';
+import { TreeNode } from '@repoatlasdev/core';
 import { BaseTreeRenderer } from '../engine/base';
-import { VSCODE_THEME } from '../theme/presets';
-import { RenderOptions, RenderedOutput, RendererPlugin } from '../types';
+import { IconResolver } from '@repoatlasdev/icons';
 
-export const vscodeRendererPlugin: RendererPlugin = {
-  name: 'vscode',
-  description: 'VSCode explorer style tree renderer',
-  fileExtension: 'txt',
-  render(tree: TreeNode, options?: RenderOptions): RenderedOutput {
-    const baseRenderer = new BaseTreeRenderer();
-    return baseRenderer.renderTree(tree, options, VSCODE_THEME);
-  },
-};
+export class VsCodeTreeRenderer extends BaseTreeRenderer {
+  readonly name = 'vscode';
+
+  protected renderNode(
+    node: TreeNode,
+    prefix: string,
+    isLast: boolean,
+    ctx: { iconResolver: IconResolver; useColor: boolean; showSize: boolean; maxDepth: number },
+    depth: number
+  ): string {
+    const connector = isLast ? '└─ ' : '├─ ';
+    const isDir = node.type === 'directory';
+    const iconResolver = new IconResolver('vscode');
+    const icon = isDir ? iconResolver.getFolderIcon() : iconResolver.getFileIcon(node.name);
+    let line = `${prefix}${connector}${icon ? `${icon} ` : ''}${node.name}\n`;
+
+    if (node.children && depth < ctx.maxDepth) {
+      const childPrefix = prefix + (isLast ? '   ' : '│  ');
+      for (let i = 0; i < node.children.length; i++) {
+        const child = node.children[i];
+        if (child) {
+          line += this.renderNode(
+            child,
+            childPrefix,
+            i === node.children.length - 1,
+            ctx,
+            depth + 1
+          );
+        }
+      }
+    }
+    return line;
+  }
+}

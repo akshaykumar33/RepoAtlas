@@ -1,14 +1,21 @@
-import { TreeNode } from '@repo-atlas/core';
-import { RenderOptions, RenderedOutput, RendererPlugin } from '../types';
+import { TreeNode } from '@repoatlasdev/core';
+import { BaseTreeRenderer } from '../engine/base';
+import { IconResolver } from '@repoatlasdev/icons';
 
-export const jsonRendererPlugin: RendererPlugin = {
-  name: 'json',
-  description: 'JSON structured tree renderer',
-  fileExtension: 'json',
-  render(tree: TreeNode, _options?: RenderOptions): RenderedOutput {
-    return {
-      format: 'json',
-      content: JSON.stringify(tree, null, 2),
-    };
-  },
-};
+export class JsonTreeRenderer extends BaseTreeRenderer {
+  readonly name = 'json';
+
+  render(tree: TreeNode): string {
+    return JSON.stringify(tree, null, 2);
+  }
+
+  protected renderNode(
+    _node: TreeNode,
+    _prefix: string,
+    _isLast: boolean,
+    _ctx: { iconResolver: IconResolver; useColor: boolean; showSize: boolean; maxDepth: number },
+    _depth: number
+  ): string {
+    return '';
+  }
+}

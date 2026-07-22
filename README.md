@@ -34,13 +34,13 @@ RepoAtlas is **NOT** just another `tree` command. It is the industry standard pl
 ### Run Instantly with `npx`
 
 ```bash
-npx @repo-atlas/cli generate
+npx @repoatlasdev/cli generate
 ```
 
 ### Install CLI Globally
 
 ```bash
-pnpm add -g @repo-atlas/cli
+pnpm add -g @repoatlasdev/cli
 repo-atlas generate --theme vscode --icons vscode
 ```
 
@@ -48,19 +48,19 @@ repo-atlas generate --theme vscode --icons vscode
 
 ## 📦 Monorepo Architecture
 
-| Package / App                                           | Description                                                | npm / Market                                 |
-| :------------------------------------------------------ | :--------------------------------------------------------- | :------------------------------------------- |
-| [`@repo-atlas/core`](./packages/core)                   | Filesystem scanning engine & tree model                    | `npm i @repo-atlas/core`                     |
-| [`@repo-atlas/renderers`](./packages/renderers)         | Multi-theme tree rendering engine                          | `npm i @repo-atlas/renderers`                |
-| [`@repo-atlas/exporters`](./packages/exporters)         | 13 Output format exporters (HTML, SVG, PDF, Mermaid, etc.) | `npm i @repo-atlas/exporters`                |
-| [`@repo-atlas/detector`](./packages/detector)           | Project framework & language detector                      | `npm i @repo-atlas/detector`                 |
-| [`@repo-atlas/icons`](./packages/icons)                 | Icon pack mappings (Emoji, VSCode, Material, Nerd)         | `npm i @repo-atlas/icons`                    |
-| [`@repo-atlas/config`](./packages/config)               | Configuration loader (`repo-atlas.config.json`)            | `npm i @repo-atlas/config`                   |
-| [`@repo-atlas/utils`](./packages/utils)                 | Helper path & formatting utilities                         | `npm i @repo-atlas/utils`                    |
-| [`@repo-atlas/cli`](./apps/cli)                         | Commander.js CLI tool with `--watch` preview               | `npm i -g @repo-atlas/cli`                   |
-| [`@repo-atlas/docs`](./apps/docs)                       | Docusaurus documentation website & interactive tools       | [Documentation Site](https://repo-atlas.dev) |
-| [`@repo-atlas/vscode`](./apps/vscode)                   | Official VSCode Extension                                  | [VSCode Marketplace](#)                      |
-| [`@repo-atlas/github-action`](./packages/github-action) | Official GitHub Action                                     | [GitHub Marketplace](#)                      |
+| Package / App                                             | Description                                                | npm / Market                                 |
+| :-------------------------------------------------------- | :--------------------------------------------------------- | :------------------------------------------- |
+| [`@repoatlasdev/core`](./packages/core)                   | Filesystem scanning engine & tree model                    | `npm i @repoatlasdev/core`                   |
+| [`@repoatlasdev/renderers`](./packages/renderers)         | Multi-theme tree rendering engine                          | `npm i @repoatlasdev/renderers`              |
+| [`@repoatlasdev/exporters`](./packages/exporters)         | 13 Output format exporters (HTML, SVG, PDF, Mermaid, etc.) | `npm i @repoatlasdev/exporters`              |
+| [`@repoatlasdev/detector`](./packages/detector)           | Project framework & language detector                      | `npm i @repoatlasdev/detector`               |
+| [`@repoatlasdev/icons`](./packages/icons)                 | Icon pack mappings (Emoji, VSCode, Material, Nerd)         | `npm i @repoatlasdev/icons`                  |
+| [`@repoatlasdev/config`](./packages/config)               | Configuration loader (`repo-atlas.config.json`)            | `npm i @repoatlasdev/config`                 |
+| [`@repoatlasdev/utils`](./packages/utils)                 | Helper path & formatting utilities                         | `npm i @repoatlasdev/utils`                  |
+| [`@repoatlasdev/cli`](./apps/cli)                         | Commander.js CLI tool with `--watch` preview               | `npm i -g @repoatlasdev/cli`                 |
+| [`@repoatlasdev/docs`](./apps/docs)                       | Docusaurus documentation website & interactive tools       | [Documentation Site](https://repo-atlas.dev) |
+| [`repo-atlas-vscode`](./apps/vscode)                      | Official VSCode Extension                                  | [VSCode Marketplace](#)                      |
+| [`@repoatlasdev/github-action`](./packages/github-action) | Official GitHub Action                                     | [GitHub Marketplace](#)                      |
 
 ---
 

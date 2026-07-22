@@ -1,5 +1,5 @@
 {
-  "name": "@repo-atlas/renderers",
+  "name": "@repoatlasdev/renderers",
   "version": "0.1.0",
   "description": "Multi-theme tree renderers for RepoAtlas (ASCII, Unicode, VSCode, Material, Nerd Font)",
   "type": "module",
@@ -30,9 +30,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@repo-atlas/core": "workspace:*",
-    "@repo-atlas/icons": "workspace:*",
-    "@repo-atlas/utils": "workspace:*",
+    "@repoatlasdev/core": "workspace:*",
+    "@repoatlasdev/icons": "workspace:*",
+    "@repoatlasdev/utils": "workspace:*",
     "picocolors": "^1.0.0"
   },
   "devDependencies": {

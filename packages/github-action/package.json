@@ -1,7 +1,7 @@
 {
-  "name": "@repo-atlas/github-action",
+  "name": "@repoatlasdev/github-action",
   "version": "0.1.0",
-  "description": "Official GitHub Action for RepoAtlas project structure visualizer",
+  "description": "Official RepoAtlas GitHub Action for automated repository tree visualization and Mermaid diagrams",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -17,6 +17,12 @@
     "dist",
     "action.yml"
   ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akshaykumar33/RepoAtlas.git",
+    "directory": "packages/github-action"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -24,13 +30,14 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@repo-atlas/config": "workspace:*",
-    "@repo-atlas/core": "workspace:*",
-    "@repo-atlas/detector": "workspace:*",
-    "@repo-atlas/exporters": "workspace:*",
-    "@repo-atlas/icons": "workspace:*",
-    "@repo-atlas/renderers": "workspace:*",
-    "@repo-atlas/utils": "workspace:*"
+    "@actions/core": "^1.10.1",
+    "@actions/exec": "^1.1.1",
+    "@repoatlasdev/config": "workspace:*",
+    "@repoatlasdev/core": "workspace:*",
+    "@repoatlasdev/exporters": "workspace:*",
+    "@repoatlasdev/icons": "workspace:*",
+    "@repoatlasdev/renderers": "workspace:*",
+    "@repoatlasdev/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

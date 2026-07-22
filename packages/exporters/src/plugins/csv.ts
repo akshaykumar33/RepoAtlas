@@ -1,4 +1,4 @@
-import { DirectoryMetadata, FileMetadata, TreeNode } from '@repo-atlas/core';
+import { DirectoryMetadata, FileMetadata, TreeNode } from '@repoatlasdev/core';
 import { ExporterPlugin, ExportResult } from '../types';
 
 export class CsvExporter implements ExporterPlugin {

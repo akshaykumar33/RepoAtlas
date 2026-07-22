@@ -1,5 +1,5 @@
 {
-  "name": "@repo-atlas/config",
+  "name": "@repoatlasdev/config",
   "version": "0.1.0",
   "description": "Configuration loader supporting repo-atlas.config.json and .repo-atlasrc",
   "type": "module",
@@ -28,6 +28,9 @@
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
+  },
+  "dependencies": {
+    "@repoatlasdev/icons": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

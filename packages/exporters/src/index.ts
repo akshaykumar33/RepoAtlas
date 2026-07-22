@@ -1,18 +1,3 @@
-import { ExporterRegistry } from './registry';
-import { TxtExporter } from './plugins/txt';
-import { MdExporter } from './plugins/md';
-import { HtmlExporter } from './plugins/html';
-import { JsonExporter } from './plugins/json';
-import { YamlExporter } from './plugins/yaml';
-import { XmlExporter } from './plugins/xml';
-import { CsvExporter } from './plugins/csv';
-import { DocxExporter } from './plugins/docx';
-import { PdfExporter } from './plugins/pdf';
-import { SvgExporter } from './plugins/svg';
-import { PngExporter } from './plugins/png';
-import { MermaidExporter } from './plugins/mermaid';
-import { PlantUmlExporter } from './plugins/plantuml';
-
 export * from './types';
 export * from './registry';
 export * from './plugins/txt';
@@ -28,19 +13,3 @@ export * from './plugins/svg';
 export * from './plugins/png';
 export * from './plugins/mermaid';
 export * from './plugins/plantuml';
-
-// Auto-register built-in exporter plugins into default registry
-const registry = ExporterRegistry.getInstance();
-registry.register(new TxtExporter());
-registry.register(new MdExporter());
-registry.register(new HtmlExporter());
-registry.register(new JsonExporter());
-registry.register(new YamlExporter());
-registry.register(new XmlExporter());
-registry.register(new CsvExporter());
-registry.register(new DocxExporter());
-registry.register(new PdfExporter());
-registry.register(new SvgExporter());
-registry.register(new PngExporter());
-registry.register(new MermaidExporter());
-registry.register(new PlantUmlExporter());

@@ -1,24 +1,20 @@
-import { IconPack } from '@repo-atlas/icons';
+import { IconPack } from '@repoatlasdev/icons';
 
-export interface TreeConnectors {
-  middleBranch: string;
+export interface ThemeConnectors {
+  vertical: string;
+  branch?: string;
+  middleBranch?: string;
   lastBranch: string;
   indent: string;
-  vertical: string;
 }
 
-export interface ThemePalette {
-  directory?: (text: string) => string;
-  file?: (text: string) => string;
-  extension?: (text: string) => string;
-  size?: (text: string) => string;
-  connector?: (text: string) => string;
-  projectBadge?: (text: string) => string;
-}
-
-export interface ThemeConfig {
+export interface ThemePreset {
   name: string;
-  connectors: TreeConnectors;
-  palette?: ThemePalette;
-  iconPack: IconPack;
+  connectors: ThemeConnectors;
+  defaultIconPack?: IconPack;
+  iconPack?: IconPack;
+  supportsColor?: boolean;
+  palette?: Record<string, (t: string) => string>;
 }
+
+export type ThemeConfig = ThemePreset;

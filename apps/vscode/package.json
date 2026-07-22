@@ -119,13 +119,13 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@repo-atlas/config": "workspace:*",
-    "@repo-atlas/core": "workspace:*",
-    "@repo-atlas/detector": "workspace:*",
-    "@repo-atlas/exporters": "workspace:*",
-    "@repo-atlas/icons": "workspace:*",
-    "@repo-atlas/renderers": "workspace:*",
-    "@repo-atlas/utils": "workspace:*"
+    "@repoatlasdev/config": "workspace:*",
+    "@repoatlasdev/core": "workspace:*",
+    "@repoatlasdev/detector": "workspace:*",
+    "@repoatlasdev/exporters": "workspace:*",
+    "@repoatlasdev/icons": "workspace:*",
+    "@repoatlasdev/renderers": "workspace:*",
+    "@repoatlasdev/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

@@ -1,7 +1,7 @@
 {
-  "name": "@repo-atlas/cli",
+  "name": "@repoatlasdev/cli",
   "version": "0.1.0",
-  "description": "Command-line interface for RepoAtlas",
+  "description": "Professional Commander.js CLI suite for RepoAtlas visual tree generation and diagnostics",
   "type": "module",
   "bin": {
     "repo-atlas": "./dist/index.cjs"
@@ -19,6 +19,12 @@
   "files": [
     "dist"
   ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akshaykumar33/RepoAtlas.git",
+    "directory": "apps/cli"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -26,12 +32,13 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@repo-atlas/config": "workspace:*",
-    "@repo-atlas/core": "workspace:*",
-    "@repo-atlas/icons": "workspace:*",
-    "@repo-atlas/renderers": "workspace:*",
-    "@repo-atlas/utils": "workspace:*",
-    "commander": "^12.0.0"
+    "@repoatlasdev/config": "workspace:*",
+    "@repoatlasdev/core": "workspace:*",
+    "@repoatlasdev/icons": "workspace:*",
+    "@repoatlasdev/renderers": "workspace:*",
+    "@repoatlasdev/utils": "workspace:*",
+    "commander": "^12.0.0",
+    "picocolors": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

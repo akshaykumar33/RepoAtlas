@@ -1,5 +1,5 @@
 {
-  "name": "@repo-atlas/core",
+  "name": "@repoatlasdev/core",
   "version": "0.1.0",
   "description": "Core repository scanning engine and tree model for RepoAtlas",
   "type": "module",
@@ -30,8 +30,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@repo-atlas/detector": "workspace:*",
-    "@repo-atlas/utils": "workspace:*",
+    "@repoatlasdev/detector": "workspace:*",
+    "@repoatlasdev/utils": "workspace:*",
     "ignore": "^5.3.1"
   },
   "devDependencies": {

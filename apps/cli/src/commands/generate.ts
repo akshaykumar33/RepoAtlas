@@ -1,91 +1,85 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { loadConfig } from '@repo-atlas/config';
-import { OnlyOption, scanRepository, SortOption } from '@repo-atlas/core';
-import { IconPack, IconResolver } from '@repo-atlas/icons';
-import { RendererRegistry } from '@repo-atlas/renderers';
+import { loadConfig } from '@repoatlasdev/config';
+import { OnlyOption, scanRepository, SortOption } from '@repoatlasdev/core';
+import { IconPack, IconResolver } from '@repoatlasdev/icons';
+import { RendererRegistry } from '@repoatlasdev/renderers';
+import { Command } from 'commander';
 
 export interface GenerateCmdOptions {
+  theme?: string;
+  icons?: string;
+  depth?: number;
+  sort?: SortOption;
+  only?: OnlyOption;
   exclude?: string[];
   include?: string[];
-  only?: OnlyOption;
-  depth?: number;
-  output?: string;
-  theme?: string;
-  format?: string;
-  icons?: string | boolean;
-  sort?: SortOption;
   gitignore?: boolean;
   config?: string;
   watch?: boolean;
   compact?: boolean;
   color?: boolean;
   showSize?: boolean;
+  output?: string;
 }
 
 export async function generateCommand(
-  targetDir: string,
-  options: GenerateCmdOptions
+  dirArg?: string,
+  options: GenerateCmdOptions = {}
 ): Promise<string> {
-  const absoluteTarget = path.resolve(targetDir || process.cwd());
+  const targetDir = path.resolve(dirArg || '.');
+  const fileConfig = await loadConfig(options.config);
 
-  let customCwd = absoluteTarget;
-  if (options.config) {
-    const configStat = await fs.stat(options.config);
-    if (configStat.isFile()) {
-      customCwd = path.dirname(path.resolve(options.config));
-    }
-  }
-
-  const loadedConfig = await loadConfig(customCwd, {
-    format: options.theme || options.format,
-    maxDepth: options.depth,
-    showSize: options.showSize,
-    outputFile: options.output,
-  });
-
-  const selectedFormat = options.theme || options.format || loadedConfig.format || 'unicode';
-
-  const ignorePatterns = [...(loadedConfig.ignorePatterns || []), ...(options.exclude || [])];
+  const maxDepth = options.depth ?? fileConfig.maxDepth;
+  const themeName = options.theme ?? fileConfig.theme ?? 'unicode';
+  const iconPack = options.icons ?? fileConfig.icons ?? 'emoji';
+  const sortBy = options.sort ?? fileConfig.sort ?? 'name';
+  const only = options.only ?? fileConfig.only ?? 'all';
+  const respectGitIgnore = options.gitignore !== false && (fileConfig.respectGitIgnore ?? true);
+  const exclude = options.exclude ?? fileConfig.exclude ?? [];
 
   const tree = await scanRepository({
-    rootDir: absoluteTarget,
-    maxDepth: options.depth ?? loadedConfig.maxDepth,
-    ignorePatterns,
-    includePatterns: options.include,
-    excludePatterns: options.exclude,
-    only: options.only,
-    sortBy: options.sort || 'name',
-    respectGitIgnore: options.gitignore ?? true,
-    includeHidden: loadedConfig.includeHidden,
+    rootDir: targetDir,
+    maxDepth,
+    ignorePatterns: exclude,
+    respectGitIgnore,
+    sortBy,
+    only,
   });
 
-  let packName: IconPack = 'emoji';
-  if (typeof options.icons === 'string') {
-    packName = options.icons as IconPack;
-  } else if (typeof options.icons === 'boolean') {
-    packName = options.icons ? 'emoji' : 'plain';
-  } else if (loadedConfig.iconPack) {
-    packName = loadedConfig.iconPack as IconPack;
-  }
-
-  const iconResolver = new IconResolver({ pack: packName });
-  const registry = RendererRegistry.getInstance();
-
-  const rendered = await registry.render(selectedFormat, tree, {
-    showSize: options.showSize ?? loadedConfig.showSize,
-    compact: options.compact ?? false,
-    useColor: options.color ?? false,
-    showIcons: options.icons !== false,
+  const registry = new RendererRegistry();
+  const iconResolver = new IconResolver(iconPack as IconPack);
+  const rendered = registry.render(tree, themeName, {
     iconResolver,
+    useColor: options.color !== false,
+    showSize: !!options.showSize,
+    maxDepth,
   });
 
   if (options.output) {
     const outputPath = path.resolve(options.output);
-    await fs.mkdir(path.dirname(outputPath), { recursive: true });
-    await fs.writeFile(outputPath, rendered.content, 'utf-8');
-    return `Output successfully saved to ${outputPath}`;
+    await fs.writeFile(outputPath, rendered, 'utf-8');
   }
 
-  return rendered.content;
+  return rendered;
+}
+
+export function registerGenerateCommand(program: Command) {
+  program
+    .command('generate [dir]')
+    .alias('gen')
+    .description('Generate visual repository tree structure')
+    .action(async (dirArg: string | undefined, options: GenerateCmdOptions) => {
+      try {
+        const output = await generateCommand(dirArg, options);
+        if (!options.output) {
+          console.log(output);
+        } else {
+          console.log(`✨ Saved to ${options.output}`);
+        }
+      } catch (err) {
+        console.error(`❌ Error: ${err}`);
+        process.exit(1);
+      }
+    });
 }

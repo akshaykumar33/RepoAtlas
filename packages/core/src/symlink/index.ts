@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
-import { normalizePath } from '@repo-atlas/utils';
+import path from 'node:path';
+import { normalizePath } from '@repoatlasdev/utils';
 
 export interface SymlinkInfo {
   isSymlink: boolean;
@@ -8,22 +9,22 @@ export interface SymlinkInfo {
 }
 
 export class SymlinkResolver {
-  private visitedPaths = new Set<string>();
+  private visitedRealPaths = new Set<string>();
 
-  async resolve(fullPath: string): Promise<SymlinkInfo> {
+  async resolve(filePath: string): Promise<SymlinkInfo> {
     try {
-      const lstat = await fs.lstat(fullPath);
-      if (!lstat.isSymbolicLink()) {
+      const lstats = await fs.lstat(filePath);
+      if (!lstats.isSymbolicLink()) {
         return { isSymlink: false };
       }
 
-      const target = await fs.readlink(fullPath);
-      const normalizedTarget = normalizePath(target);
-      const isCycle = this.visitedPaths.has(normalizedTarget);
+      const target = await fs.readlink(filePath);
+      const realPath = await fs.realpath(filePath);
+      const isCycle = this.visitedRealPaths.has(realPath);
 
       return {
         isSymlink: true,
-        target: normalizedTarget,
+        target: normalizePath(target),
         isCycle,
       };
     } catch {
@@ -31,11 +32,12 @@ export class SymlinkResolver {
     }
   }
 
-  markVisited(fullPath: string): void {
-    this.visitedPaths.add(normalizePath(fullPath));
-  }
-
-  clear(): void {
-    this.visitedPaths.clear();
+  markVisited(filePath: string) {
+    try {
+      const real = path.resolve(filePath);
+      this.visitedRealPaths.add(real);
+    } catch {
+      // Ignore
+    }
   }
 }

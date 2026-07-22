@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { ProjectDetector } from '@repo-atlas/detector';
-import { normalizePath, relativePath } from '@repo-atlas/utils';
+import { ProjectDetector } from '@repoatlasdev/detector';
+import { normalizePath, relativePath } from '@repoatlasdev/utils';
 import { IgnoreFilter } from './filter/ignore';
 import { MetadataResolver } from './metadata';
 import { SymlinkResolver } from './symlink';

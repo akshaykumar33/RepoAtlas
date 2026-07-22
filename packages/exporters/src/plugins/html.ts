@@ -1,49 +1,41 @@
-import { TreeNode } from '@repo-atlas/core';
-import { ExporterPlugin, ExportOptions, ExportResult } from '../types';
+import { TreeNode } from '@repoatlasdev/core';
+import { ExporterPlugin, ExportResult } from '../types';
 
 export class HtmlExporter implements ExporterPlugin {
   readonly name = 'html';
   readonly fileExtension = 'html';
   readonly mimeType = 'text/html';
 
-  export(tree: TreeNode, renderedContent?: string, options?: ExportOptions): ExportResult {
-    const title = options?.title || `RepoAtlas - ${tree.name}`;
-    const safeContent = renderedContent || tree.name;
+  export(tree: TreeNode): ExportResult {
+    function renderHtml(node: TreeNode): string {
+      const isDir = node.type === 'directory';
+      let html = `<li class="${isDir ? 'folder' : 'file'}"><span>${isDir ? '📁' : '📄'} ${node.name}</span>`;
+      if (node.children && node.children.length > 0) {
+        html += '<ul>';
+        for (const child of node.children) {
+          html += renderHtml(child);
+        }
+        html += '</ul>';
+      }
+      html += '</li>';
+      return html;
+    }
 
-    const html = `<!DOCTYPE html>
-<html lang="en">
+    const bodyHtml = `<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title}</title>
+  <meta charset="UTF-8" />
+  <title>${tree.name} - Project Structure</title>
   <style>
-    body {
-      background-color: #0d1117;
-      color: #c9d1d9;
-      font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
-      padding: 2rem;
-      margin: 0;
-    }
-    h1 {
-      color: #58a6ff;
-      font-size: 1.5rem;
-      border-bottom: 1px solid #30363d;
-      padding-bottom: 0.5rem;
-    }
-    pre {
-      background-color: #161b22;
-      padding: 1.25rem;
-      border-radius: 8px;
-      border: 1px solid #30363d;
-      overflow-x: auto;
-      font-size: 0.95rem;
-      line-height: 1.5;
-    }
+    body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; }
+    ul { list-style: none; padding-left: 1.5rem; }
+    .folder { font-weight: bold; color: #38bdf8; }
+    .file { color: #cbd5e1; }
   </style>
 </head>
 <body>
-  <h1>${title}</h1>
-  <pre><code>${safeContent}</code></pre>
+  <h1>🗺️ RepoAtlas Structure: ${tree.name}</h1>
+  <ul>${renderHtml(tree)}</ul>
 </body>
 </html>`;
 
@@ -51,8 +43,8 @@ export class HtmlExporter implements ExporterPlugin {
       format: this.name,
       fileExtension: this.fileExtension,
       mimeType: this.mimeType,
-      content: html,
-      filename: `${tree.name}-structure.html`,
+      content: bodyHtml,
+      filename: `${tree.name}-tree.html`,
     };
   }
 }

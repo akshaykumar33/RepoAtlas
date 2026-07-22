@@ -1,21 +1,26 @@
-import { loadConfig } from '@repo-atlas/config';
-import { RendererRegistry } from '@repo-atlas/renderers';
+import { loadConfig } from '@repoatlasdev/config';
+import { RendererRegistry } from '@repoatlasdev/renderers';
+import { Command } from 'commander';
 
 export async function doctorCommand(): Promise<string> {
-  const config = await loadConfig();
-  const registry = RendererRegistry.getInstance();
-  const plugins = registry.listPlugins();
+  const registry = new RendererRegistry();
+  const themes = registry.list();
+  const conf = await loadConfig();
 
-  const lines = [
-    '=== RepoAtlas Doctor Diagnostics ===',
-    `Node Version: ${process.version}`,
-    `Platform: ${process.platform}`,
-    `Loaded Config Format: ${config.format}`,
-    `Loaded Config Max Depth: ${config.maxDepth}`,
-    `Registered Renderer Plugins (${plugins.length}):`,
-    ...plugins.map((p) => `  - ${p.name}: ${p.description}`),
-    'Status: Everything healthy!',
-  ];
+  return `RepoAtlas Doctor Diagnostics
+Node.js Version : ${process.version}
+Platform        : ${process.platform} (${process.arch})
+Config Keys     : ${Object.keys(conf).length}
+Render Themes   : ${themes.join(', ')}
+Status          : Clean`;
+}
 
-  return lines.join('\n');
+export function registerDoctorCommand(program: Command) {
+  program
+    .command('doctor')
+    .description('Run system diagnostic checks for RepoAtlas CLI environment')
+    .action(async () => {
+      const output = await doctorCommand();
+      console.log(output);
+    });
 }

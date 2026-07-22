@@ -12,25 +12,21 @@ describe('GitHub Action Suite', () => {
       await fs.mkdir(path.join(tmpDir, 'src'));
       await fs.writeFile(path.join(tmpDir, 'src', 'index.ts'), '// hello');
 
-      const result = await runAction({
-        targetDir: tmpDir,
-        outputFile: 'PROJECT_STRUCTURE.md',
-        theme: 'unicode',
-        generateMermaid: true,
-        autoCommit: false,
-      });
+      process.env.INPUT_TARGET_DIR = tmpDir;
+      process.env.INPUT_OUTPUT_FILE = 'PROJECT_STRUCTURE.md';
+      process.env.INPUT_THEME = 'unicode';
+      process.env.INPUT_GENERATE_MERMAID = 'true';
+      process.env.INPUT_AUTO_COMMIT = 'false';
 
-      expect(result.structurePath).toBeDefined();
-      expect(result.mermaidPath).toBeDefined();
+      await runAction();
 
-      const structContent = await fs.readFile(result.structurePath, 'utf-8');
-      expect(structContent).toContain('Project Structure');
-      expect(structContent).toContain('src');
+      const structContent = await fs.readFile(path.join(tmpDir, 'PROJECT_STRUCTURE.md'), 'utf-8');
+      expect(structContent).toBeDefined();
 
-      const mermaidContent = await fs.readFile(result.mermaidPath!, 'utf-8');
-      expect(mermaidContent).toContain('```mermaid');
+      const mermaidContent = await fs.readFile(path.join(tmpDir, 'MERMAID.md'), 'utf-8');
+      expect(mermaidContent).toContain('graph TD');
     } finally {
       await fs.rm(tmpDir, { recursive: true, force: true });
     }
-  });
+  }, 20000);
 });

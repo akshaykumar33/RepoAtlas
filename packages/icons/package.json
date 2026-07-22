@@ -1,5 +1,5 @@
 {
-  "name": "@repo-atlas/icons",
+  "name": "@repoatlasdev/icons",
   "version": "0.1.0",
   "description": "Icon mappings for RepoAtlas themes (Emoji, VSCode, Material, Nerd Font)",
   "type": "module",
@@ -28,6 +28,9 @@
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
+  },
+  "dependencies": {
+    "@repoatlasdev/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

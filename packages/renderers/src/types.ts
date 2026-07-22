@@ -1,27 +1,15 @@
-import { TreeNode } from '@repo-atlas/core';
-import { IconResolver } from '@repo-atlas/icons';
-import { ThemeConfig } from './theme/types';
+import { TreeNode } from '@repoatlasdev/core';
+import { IconPack, IconResolver } from '@repoatlasdev/icons';
 
 export interface RenderOptions {
-  showSize?: boolean;
-  showIcons?: boolean;
-  compact?: boolean;
-  useColor?: boolean;
-  theme?: ThemeConfig;
+  icons?: IconPack;
   iconResolver?: IconResolver;
-  indentSize?: number;
-  customOptions?: Record<string, unknown>;
+  useColor?: boolean;
+  showSize?: boolean;
+  maxDepth?: number;
 }
 
-export interface RenderedOutput {
-  format: string;
-  content: string;
-  metadata?: Record<string, unknown>;
-}
-
-export interface RendererPlugin {
-  name: string;
-  description: string;
-  fileExtension?: string;
-  render(tree: TreeNode, options?: RenderOptions): Promise<RenderedOutput> | RenderedOutput;
+export interface TreeRenderer {
+  readonly name: string;
+  render(tree: TreeNode, options?: RenderOptions): string;
 }

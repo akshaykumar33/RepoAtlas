@@ -1,4 +1,4 @@
-import { TreeNode } from '@repo-atlas/core';
+import { TreeNode } from '@repoatlasdev/core';
 import { ExporterPlugin, ExportResult } from '../types';
 
 export class TxtExporter implements ExporterPlugin {
@@ -6,14 +6,23 @@ export class TxtExporter implements ExporterPlugin {
   readonly fileExtension = 'txt';
   readonly mimeType = 'text/plain';
 
-  export(tree: TreeNode, renderedContent?: string): ExportResult {
-    const content = renderedContent || tree.name;
+  export(tree: TreeNode): ExportResult {
+    function renderTxt(node: TreeNode, indent = ''): string {
+      let txt = `${indent}${node.name}\n`;
+      if (node.children) {
+        for (const child of node.children) {
+          txt += renderTxt(child, `${indent}  `);
+        }
+      }
+      return txt;
+    }
+
     return {
       format: this.name,
       fileExtension: this.fileExtension,
       mimeType: this.mimeType,
-      content,
-      filename: `${tree.name}-structure.txt`,
+      content: renderTxt(tree),
+      filename: `${tree.name}-tree.txt`,
     };
   }
 }

@@ -2,39 +2,45 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { RepoAtlasConfig } from './types';
 
-export const DEFAULT_CONFIG: Required<RepoAtlasConfig> = {
+export const DEFAULT_CONFIG: RepoAtlasConfig = {
   format: 'unicode',
-  maxDepth: 10,
-  ignorePatterns: ['.git', 'node_modules', 'dist', '.turbo', '.DS_Store'],
+  maxDepth: 4,
+  ignorePatterns: [],
   includeHidden: false,
   showSize: false,
   iconPack: 'emoji',
-  theme: 'default',
-  outputFile: '',
+  theme: 'unicode',
+  outputFile: 'PROJECT_STRUCTURE.md',
 };
 
 export async function loadConfig(
-  cwd: string = process.cwd(),
-  cliOverrides?: Partial<RepoAtlasConfig>
-): Promise<Required<RepoAtlasConfig>> {
-  const configNames = ['repo-atlas.config.json', '.repo-atlasrc', '.repo-atlasrc.json'];
-
+  cwdOrConfigPath?: string,
+  overrides?: Partial<RepoAtlasConfig>
+): Promise<RepoAtlasConfig> {
   let fileConfig: Partial<RepoAtlasConfig> = {};
 
-  for (const name of configNames) {
-    const fullPath = path.join(cwd, name);
+  if (cwdOrConfigPath && cwdOrConfigPath.endsWith('.json')) {
     try {
+      const fullPath = path.resolve(cwdOrConfigPath);
       const content = await fs.readFile(fullPath, 'utf-8');
       fileConfig = JSON.parse(content);
-      break;
     } catch {
-      // Continue to next config file check
+      // Ignore
+    }
+  } else {
+    const baseDir = cwdOrConfigPath ? path.resolve(cwdOrConfigPath) : process.cwd();
+    const defaultFiles = ['repo-atlas.config.json', '.repo-atlasrc', '.repo-atlasrc.json'];
+    for (const file of defaultFiles) {
+      try {
+        const fullPath = path.resolve(baseDir, file);
+        const content = await fs.readFile(fullPath, 'utf-8');
+        fileConfig = JSON.parse(content);
+        break;
+      } catch {
+        // Ignore missing files
+      }
     }
   }
 
-  return {
-    ...DEFAULT_CONFIG,
-    ...fileConfig,
-    ...cliOverrides,
-  };
+  return { ...DEFAULT_CONFIG, ...fileConfig, ...overrides };
 }

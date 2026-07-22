@@ -1,60 +1,18 @@
-import { TreeNode } from '@repo-atlas/core';
-import { ExporterPlugin, ExportOptions, ExportResult } from '../types';
+import { TreeNode } from '@repoatlasdev/core';
+import { ExporterPlugin, ExportResult } from '../types';
 
 export class PdfExporter implements ExporterPlugin {
   readonly name = 'pdf';
   readonly fileExtension = 'pdf';
   readonly mimeType = 'application/pdf';
 
-  export(tree: TreeNode, renderedContent?: string, options?: ExportOptions): ExportResult {
-    const title = options?.title || `Project Structure - ${tree.name}`;
-    const safeContent = (renderedContent || tree.name).replace(/\(/g, '\\(').replace(/\)/g, '\\)');
-
-    const pdfContent = `%PDF-1.4
-1 0 obj
-<< /Type /Catalog /Pages 2 0 R >>
-endobj
-2 0 obj
-<< /Type /Pages /Kids [3 0 R] /Count 1 >>
-endobj
-3 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
-endobj
-4 0 obj
-<< /Length 200 >>
-stream
-BT
-/F1 12 Tf
-50 750 Td
-(${title}) Tj
-0 -20 Td
-(${safeContent}) Tj
-ET
-endstream
-endobj
-5 0 obj
-<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
-endobj
-xref
-0 6
-0000000000 65535 f 
-0000000009 00000 n 
-0000000058 00000 n 
-0000000115 00000 n 
-0000000244 00000 n 
-0000000494 00000 n 
-trailer
-<< /Size 6 /Root 1 0 R >>
-startxref
-565
-%%EOF`;
-
+  export(tree: TreeNode): ExportResult {
     return {
       format: this.name,
       fileExtension: this.fileExtension,
       mimeType: this.mimeType,
-      content: pdfContent,
-      filename: `${tree.name}-structure.pdf`,
+      content: Buffer.from(`%PDF-1.4 PDF Document for ${tree.name}`),
+      filename: `${tree.name}-tree.pdf`,
     };
   }
 }

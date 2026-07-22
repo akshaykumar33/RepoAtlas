@@ -5,20 +5,22 @@ describe('Icon Resolver', () => {
   it('resolves specific filenames and extensions', () => {
     const resolver = new IconResolver({ pack: 'emoji' });
 
-    expect(resolver.resolveFile('package.json')).toBe('📦');
-    expect(resolver.resolveFile('index.ts')).toBe('📘');
-    expect(resolver.resolveFile('unknown.xyz')).toBe('📄');
-    expect(resolver.resolveFolder()).toBe('📁');
+    expect(resolver.getFileIcon('package.json')).toBe('📋');
+    expect(resolver.getFileIcon('index.ts')).toBe('🔷');
+    expect(resolver.getFileIcon('unknown.xyz')).toBe('📄');
+    expect(resolver.getFolderIcon()).toBe('📁');
   });
 
   it('supports custom override icons', () => {
     const resolver = new IconResolver({
       pack: 'emoji',
       customIcons: {
-        file: '✨',
+        extensions: {
+          xyz: '✨',
+        },
       },
     });
 
-    expect(resolver.resolveFile('unknown.xyz')).toBe('✨');
+    expect(resolver.getFileIcon('unknown.xyz')).toBe('✨');
   });
 });

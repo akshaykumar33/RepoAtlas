@@ -1,29 +1,29 @@
-import { TreeNode } from '@repo-atlas/core';
+import { TreeNode } from '@repoatlasdev/core';
 import { ExporterPlugin, ExportResult } from '../types';
 
 export class PlantUmlExporter implements ExporterPlugin {
   readonly name = 'plantuml';
   readonly fileExtension = 'puml';
-  readonly mimeType = 'text/x-plantuml';
+  readonly mimeType = 'text/plain';
 
   export(tree: TreeNode): ExportResult {
     const lines: string[] = ['@startuml', `package "${tree.name}" {`];
 
-    function processNode(node: TreeNode, indent: string) {
-      if (!node.children || node.children.length === 0) return;
-
-      for (const child of node.children) {
-        if (child.type === 'directory') {
-          lines.push(`${indent}package "${child.name}" {`);
-          processNode(child, `${indent}  `);
-          lines.push(`${indent}}`);
-        } else {
-          lines.push(`${indent}[${child.name}]`);
+    function renderPuml(node: TreeNode, indent = '  ') {
+      if (node.children) {
+        for (const child of node.children) {
+          if (child.type === 'directory') {
+            lines.push(`${indent}folder "${child.name}" {`);
+            renderPuml(child, `${indent}  `);
+            lines.push(`${indent}}`);
+          } else {
+            lines.push(`${indent}[${child.name}]`);
+          }
         }
       }
     }
 
-    processNode(tree, '  ');
+    renderPuml(tree);
     lines.push('}', '@enduml');
 
     return {
@@ -31,7 +31,7 @@ export class PlantUmlExporter implements ExporterPlugin {
       fileExtension: this.fileExtension,
       mimeType: this.mimeType,
       content: lines.join('\n'),
-      filename: `${tree.name}-diagram.puml`,
+      filename: `${tree.name}-structure.puml`,
     };
   }
 }

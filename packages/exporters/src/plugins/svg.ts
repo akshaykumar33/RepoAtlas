@@ -1,43 +1,41 @@
-import { TreeNode } from '@repo-atlas/core';
-import { ExporterPlugin, ExportOptions, ExportResult } from '../types';
+import { TreeNode } from '@repoatlasdev/core';
+import { ExporterPlugin, ExportResult } from '../types';
 
 export class SvgExporter implements ExporterPlugin {
   readonly name = 'svg';
   readonly fileExtension = 'svg';
   readonly mimeType = 'image/svg+xml';
 
-  export(tree: TreeNode, renderedContent?: string, options?: ExportOptions): ExportResult {
-    const title = options?.title || tree.name;
-    const lines = (renderedContent || tree.name).split('\n');
-    const lineHeight = 20;
-    const height = Math.max(300, lines.length * lineHeight + 80);
-    const width = 800;
+  export(tree: TreeNode): ExportResult {
+    let yPos = 30;
+    const lines: string[] = [];
 
-    const svgLines = lines
-      .map((line, i) => {
-        const escaped = line
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/ /g, '&#160;');
-        return `<tspan x="20" y="${60 + i * lineHeight}">${escaped}</tspan>`;
-      })
-      .join('\n    ');
+    function renderSvgNode(node: TreeNode, x: number) {
+      const icon = node.type === 'directory' ? '📁' : '📄';
+      lines.push(
+        `<text x="${x}" y="${yPos}" fill="#e2e8f0" font-family="monospace" font-size="14">${icon} ${node.name}</text>`
+      );
+      yPos += 24;
 
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-  <rect width="100%" height="100%" fill="#0d1117" rx="8"/>
-  <text x="20" y="30" fill="#58a6ff" font-family="monospace" font-size="16" font-weight="bold">${title}</text>
-  <text font-family="monospace" font-size="14" fill="#c9d1d9">
-    ${svgLines}
-  </text>
+      if (node.children) {
+        for (const child of node.children) {
+          renderSvgNode(child, x + 20);
+        }
+      }
+    }
+
+    renderSvgNode(tree, 20);
+
+    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="${yPos + 20}" style="background:#0f172a;">
+${lines.join('\n')}
 </svg>`;
 
     return {
       format: this.name,
       fileExtension: this.fileExtension,
       mimeType: this.mimeType,
-      content: svg,
-      filename: `${tree.name}-structure.svg`,
+      content: svgContent,
+      filename: `${tree.name}-tree.svg`,
     };
   }
 }

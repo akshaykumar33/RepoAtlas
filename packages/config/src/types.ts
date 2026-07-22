@@ -1,12 +1,19 @@
-import { IconPack } from '@repo-atlas/icons';
+import { IconPack } from '@repoatlasdev/icons';
 
 export interface RepoAtlasConfig {
-  format?: 'ascii' | 'unicode' | 'markdown' | 'json' | 'mermaid' | string;
   maxDepth?: number;
+  theme?: string;
+  icons?: IconPack;
+  iconPack?: IconPack;
+  sort?: 'name' | 'size' | 'type';
+  only?: 'all' | 'files' | 'directories';
+  exclude?: string[];
+  include?: string[];
+  respectGitIgnore?: boolean;
+  format?: string;
   ignorePatterns?: string[];
   includeHidden?: boolean;
   showSize?: boolean;
-  iconPack?: IconPack;
-  theme?: string;
+  useColor?: boolean;
   outputFile?: string;
 }

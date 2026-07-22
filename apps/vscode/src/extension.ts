@@ -1,192 +1,140 @@
+import * as path from 'node:path';
+import { scanRepository } from '@repoatlasdev/core';
+import { ExporterRegistry } from '@repoatlasdev/exporters';
+import { IconPack, IconResolver } from '@repoatlasdev/icons';
+import { RendererRegistry } from '@repoatlasdev/renderers';
 import * as vscode from 'vscode';
-import path from 'node:path';
-import { scanRepository, TreeNode } from '@repo-atlas/core';
-import { RendererRegistry } from '@repo-atlas/renderers';
-import { ExporterRegistry } from '@repo-atlas/exporters';
-import { getWebviewContent } from './previewWebview';
 
-export async function generateStructure(
-  targetPath?: string,
-  themePreset = 'vscode'
-): Promise<{ tree: TreeNode; rendered: string }> {
-  const rootDir = targetPath || vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || process.cwd();
+export function activate(context: vscode.ExtensionContext) {
+  const generateCmd = vscode.commands.registerCommand('repo-atlas.generate', async () => {
+    const targetFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    if (!targetFolder) {
+      vscode.window.showErrorMessage('No workspace folder open in VSCode.');
+      return;
+    }
 
-  const config = vscode.workspace.getConfiguration('repoAtlas');
-  const maxDepth = config.get<number>('maxDepth') ?? 4;
-  const respectGitIgnore = config.get<boolean>('respectGitIgnore') ?? true;
+    try {
+      const config = vscode.workspace.getConfiguration('repoAtlas');
+      const maxDepth = config.get<number>('maxDepth') || 4;
+      const theme = config.get<string>('theme') || 'unicode';
+      const iconPack = config.get<string>('iconPack') || 'emoji';
 
-  const tree = await scanRepository({
-    rootDir,
-    maxDepth,
-    respectGitIgnore,
+      const tree = await scanRepository({ rootDir: targetFolder, maxDepth });
+      const rendererRegistry = new RendererRegistry();
+      const iconResolver = new IconResolver(iconPack as IconPack);
+
+      const rendered = rendererRegistry.render(tree, theme, { iconResolver });
+      const doc = await vscode.workspace.openTextDocument({
+        content: rendered,
+        language: 'plaintext',
+      });
+      await vscode.window.showTextDocument(doc);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      vscode.window.showErrorMessage(`RepoAtlas Error: ${msg}`);
+    }
   });
 
-  const rendererRegistry = RendererRegistry.getInstance();
-  const renderedOutput = await rendererRegistry.render(themePreset, tree, {
-    showIcons: true,
+  const previewCmd = vscode.commands.registerCommand('repo-atlas.preview', async () => {
+    const targetFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    if (!targetFolder) {
+      vscode.window.showErrorMessage('No workspace folder open.');
+      return;
+    }
+
+    const panel = vscode.window.createWebviewPanel(
+      'repoAtlasPreview',
+      'RepoAtlas Structure',
+      vscode.ViewColumn.Two,
+      {
+        enableScripts: true,
+      }
+    );
+
+    const tree = await scanRepository({ rootDir: targetFolder, maxDepth: 3 });
+    const rendererRegistry = new RendererRegistry();
+    const rendered = rendererRegistry.render(tree, 'unicode');
+
+    panel.webview.html = `<!DOCTYPE html>
+      <html>
+        <head><style>body { font-family: monospace; padding: 15px; background: #1e1e1e; color: #d4d4d4; white-space: pre; }</style></head>
+        <body>${rendered}</body>
+      </html>`;
   });
 
-  return { tree, rendered: renderedOutput.content };
-}
+  const copyTreeCmd = vscode.commands.registerCommand('repo-atlas.copyTree', async () => {
+    const targetFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    if (!targetFolder) return;
 
-export function activate(context: vscode.ExtensionContext): void {
-  // Command 1: Generate Structure in New Editor
-  const generateCmd = vscode.commands.registerCommand(
-    'repo-atlas.generate',
-    async (uri?: vscode.Uri) => {
-      try {
-        const targetPath = uri?.fsPath;
-        const { rendered } = await generateStructure(targetPath);
-        const doc = await vscode.workspace.openTextDocument({
-          content: rendered,
-          language: 'plaintext',
-        });
-        await vscode.window.showTextDocument(doc);
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
-        vscode.window.showErrorMessage(`RepoAtlas Error: ${msg}`);
-      }
+    const tree = await scanRepository({ rootDir: targetFolder });
+    const rendererRegistry = new RendererRegistry();
+    const rendered = rendererRegistry.render(tree, 'unicode');
+
+    await vscode.env.clipboard.writeText(rendered);
+    vscode.window.showInformationMessage('RepoAtlas structure copied to clipboard!');
+  });
+
+  const exportTreeCmd = vscode.commands.registerCommand('repo-atlas.exportTree', async () => {
+    const targetFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    if (!targetFolder) return;
+
+    const tree = await scanRepository({ rootDir: targetFolder });
+    const exporterRegistry = new ExporterRegistry();
+    const result = exporterRegistry.export(tree, 'json');
+
+    const uri = await vscode.window.showSaveDialog({
+      defaultUri: vscode.Uri.file(path.join(targetFolder, 'PROJECT_STRUCTURE.json')),
+    });
+    if (uri) {
+      await vscode.workspace.fs.writeFile(uri, Buffer.from(String(result.content)));
+      vscode.window.showInformationMessage(`Exported to ${uri.fsPath}`);
     }
-  );
+  });
 
-  // Command 2: Live Webview Preview inside VSCode
-  const previewCmd = vscode.commands.registerCommand(
-    'repo-atlas.preview',
-    async (uri?: vscode.Uri) => {
-      try {
-        const targetPath = uri?.fsPath;
-        const { tree, rendered } = await generateStructure(targetPath);
-
-        const panel = vscode.window.createWebviewPanel(
-          'repoAtlasPreview',
-          `RepoAtlas Preview - ${tree.name}`,
-          vscode.ViewColumn.One,
-          { enableScripts: true }
-        );
-
-        panel.webview.html = getWebviewContent(tree, rendered, 'VSCode');
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
-        vscode.window.showErrorMessage(`RepoAtlas Preview Error: ${msg}`);
-      }
-    }
-  );
-
-  // Command 3: Copy Tree to Clipboard
-  const copyCmd = vscode.commands.registerCommand(
-    'repo-atlas.copyTree',
-    async (uri?: vscode.Uri) => {
-      try {
-        const targetPath = uri?.fsPath;
-        const { rendered } = await generateStructure(targetPath);
-        await vscode.env.clipboard.writeText(rendered);
-        vscode.window.showInformationMessage('RepoAtlas: Tree structure copied to clipboard!');
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
-        vscode.window.showErrorMessage(`Copy Failed: ${msg}`);
-      }
-    }
-  );
-
-  // Command 4: Export Structure to File
-  const exportCmd = vscode.commands.registerCommand(
-    'repo-atlas.exportTree',
-    async (uri?: vscode.Uri) => {
-      try {
-        const targetPath = uri?.fsPath;
-        const { tree, rendered } = await generateStructure(targetPath);
-
-        const format = await vscode.window.showQuickPick(
-          [
-            'txt',
-            'md',
-            'html',
-            'json',
-            'yaml',
-            'xml',
-            'csv',
-            'docx',
-            'pdf',
-            'svg',
-            'mermaid',
-            'plantuml',
-          ],
-          { placeHolder: 'Select export format' }
-        );
-
-        if (!format) return;
-
-        const exporterRegistry = ExporterRegistry.getInstance();
-        const exportResult = await exporterRegistry.export(format, tree, rendered);
-
-        const saveUri = await vscode.window.showSaveDialog({
-          defaultUri: vscode.Uri.file(
-            path.join(targetPath || process.cwd(), exportResult.filename)
-          ),
-        });
-
-        if (saveUri) {
-          const contentBuffer =
-            typeof exportResult.content === 'string'
-              ? Buffer.from(exportResult.content, 'utf-8')
-              : exportResult.content;
-          await vscode.workspace.fs.writeFile(saveUri, contentBuffer);
-          vscode.window.showInformationMessage(
-            `RepoAtlas: Exported successfully to ${saveUri.fsPath}`
-          );
-        }
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
-        vscode.window.showErrorMessage(`Export Failed: ${msg}`);
-      }
-    }
-  );
-
-  // Command 5: Generate Markdown
-  const markdownCmd = vscode.commands.registerCommand(
+  const generateMarkdownCmd = vscode.commands.registerCommand(
     'repo-atlas.generateMarkdown',
-    async (uri?: vscode.Uri) => {
-      try {
-        const targetPath = uri?.fsPath;
-        const { tree, rendered } = await generateStructure(targetPath, 'markdown');
-        const exporterRegistry = ExporterRegistry.getInstance();
-        const result = await exporterRegistry.export('md', tree, rendered);
+    async () => {
+      const targetFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+      if (!targetFolder) return;
 
-        const doc = await vscode.workspace.openTextDocument({
-          content: result.content.toString(),
-          language: 'markdown',
-        });
-        await vscode.window.showTextDocument(doc);
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
-        vscode.window.showErrorMessage(`Markdown Generation Failed: ${msg}`);
-      }
+      const tree = await scanRepository({ rootDir: targetFolder });
+      const exporterRegistry = new ExporterRegistry();
+      const result = exporterRegistry.export(tree, 'md');
+
+      const doc = await vscode.workspace.openTextDocument({
+        content: String(result.content),
+        language: 'markdown',
+      });
+      await vscode.window.showTextDocument(doc);
     }
   );
 
-  // Command 6: Generate Mermaid Diagram
-  const mermaidCmd = vscode.commands.registerCommand(
+  const generateMermaidCmd = vscode.commands.registerCommand(
     'repo-atlas.generateMermaid',
-    async (uri?: vscode.Uri) => {
-      try {
-        const targetPath = uri?.fsPath;
-        const { tree, rendered } = await generateStructure(targetPath);
-        const exporterRegistry = ExporterRegistry.getInstance();
-        const result = await exporterRegistry.export('mermaid', tree, rendered);
+    async () => {
+      const targetFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+      if (!targetFolder) return;
 
-        const doc = await vscode.workspace.openTextDocument({
-          content: result.content.toString(),
-          language: 'mermaid',
-        });
-        await vscode.window.showTextDocument(doc);
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
-        vscode.window.showErrorMessage(`Mermaid Generation Failed: ${msg}`);
-      }
+      const tree = await scanRepository({ rootDir: targetFolder });
+      const exporterRegistry = new ExporterRegistry();
+      const result = exporterRegistry.export(tree, 'mermaid');
+
+      const doc = await vscode.workspace.openTextDocument({
+        content: String(result.content),
+        language: 'mermaid',
+      });
+      await vscode.window.showTextDocument(doc);
     }
   );
 
-  context.subscriptions.push(generateCmd, previewCmd, copyCmd, exportCmd, markdownCmd, mermaidCmd);
+  context.subscriptions.push(
+    generateCmd,
+    previewCmd,
+    copyTreeCmd,
+    exportTreeCmd,
+    generateMarkdownCmd,
+    generateMermaidCmd
+  );
 }
 
-export function deactivate(): void {}
+export function deactivate() {}

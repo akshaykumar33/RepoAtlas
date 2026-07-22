@@ -1,5 +1,5 @@
 {
-  "name": "@repo-atlas/detector",
+  "name": "@repoatlasdev/detector",
   "version": "0.1.0",
   "description": "Project framework and language detector for RepoAtlas",
   "type": "module",

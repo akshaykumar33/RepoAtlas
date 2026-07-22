@@ -1,153 +1,72 @@
-import { getExtension } from '@repo-atlas/utils';
-import { IconMapping, IconPack, IconResolverOptions } from './types';
-
-const EMOJI_PACK: IconMapping = {
-  folder: '📁',
-  folderOpen: '📂',
-  file: '📄',
-  extensions: {
-    ts: '📘',
-    tsx: '⚛️',
-    js: '📙',
-    jsx: '⚛️',
-    json: '📋',
-    md: '📝',
-    yml: '⚙️',
-    yaml: '⚙️',
-    css: '🎨',
-    html: '🌐',
-  },
-  filenames: {
-    'package.json': '📦',
-    'tsconfig.json': '⚙️',
-    'README.md': '📖',
-    '.gitignore': '🙈',
-    'AGENTS.md': '🤖',
-  },
-};
-
-const UNICODE_PACK: IconMapping = {
-  folder: '🗀',
-  folderOpen: '🗁',
-  file: '🗋',
-  extensions: {},
-  filenames: {},
-};
-
-const PLAIN_PACK: IconMapping = {
-  folder: '[D]',
-  folderOpen: '[D]',
-  file: '[F]',
-  extensions: {},
-  filenames: {},
-};
-
-const VSCODE_PACK: IconMapping = {
-  folder: '📁',
-  folderOpen: '📂',
-  file: '📄',
-  extensions: {
-    ts: '',
-    tsx: '',
-    js: '',
-    jsx: '',
-    json: '',
-    md: '',
-    yml: '',
-    yaml: '',
-    css: '',
-    html: '',
-  },
-  filenames: {
-    'package.json': '',
-    'tsconfig.json': '',
-    'README.md': '📖',
-  },
-};
-
-const MATERIAL_PACK: IconMapping = {
-  folder: '📂',
-  folderOpen: '📂',
-  file: '📄',
-  extensions: {
-    ts: '󰛦',
-    tsx: '󰜞',
-    js: '󰌞',
-    jsx: '󰜞',
-    json: '󰘦',
-    md: '󰍔',
-    css: '󰌜',
-    html: '󰌝',
-  },
-  filenames: {
-    'package.json': '󰏗',
-    'tsconfig.json': '󰛦',
-  },
-};
-
-const NERD_PACK: IconMapping = {
-  folder: '📁',
-  folderOpen: '📂',
-  file: '📄',
-  extensions: {
-    ts: '',
-    tsx: '',
-    js: '',
-    jsx: '',
-    json: '',
-    md: '',
-    py: '',
-    rs: '',
-    go: '',
-  },
-  filenames: {
-    'package.json': '',
-    'tsconfig.json': '',
-    Dockerfile: '',
-  },
-};
-
-const PACKS: Record<IconPack, IconMapping> = {
-  emoji: EMOJI_PACK,
-  unicode: UNICODE_PACK,
-  plain: PLAIN_PACK,
-  ascii: PLAIN_PACK,
-  vscode: VSCODE_PACK,
-  material: MATERIAL_PACK,
-  nerd: NERD_PACK,
-};
+import { getExtension } from '@repoatlasdev/utils';
+import { EMOJI_ICONS, MATERIAL_ICONS, NERD_FONTS_ICONS, VSCODE_ICONS } from './presets';
+import { IconPack, IconResolverOptions } from './types';
 
 export class IconResolver {
-  private pack: IconMapping;
+  private pack: IconPack;
+  private customIcons?: Record<string, string>;
 
-  constructor(options?: IconResolverOptions) {
-    const selectedPack = PACKS[options?.pack || 'emoji'] || EMOJI_PACK;
-    this.pack = {
-      ...selectedPack,
-      ...options?.customIcons,
-      extensions: {
-        ...selectedPack.extensions,
-        ...options?.customIcons?.extensions,
-      },
-      filenames: {
-        ...selectedPack.filenames,
-        ...options?.customIcons?.filenames,
-      },
-    };
+  constructor(options?: IconPack | IconResolverOptions) {
+    if (typeof options === 'string') {
+      this.pack = options;
+    } else {
+      this.pack = options?.pack ?? 'emoji';
+      this.customIcons = options?.customIcons?.extensions;
+    }
   }
 
-  resolveFolder(isOpen = false): string {
-    return isOpen ? this.pack.folderOpen : this.pack.folder;
+  getFolderIcon(isOpen = false): string {
+    switch (this.pack) {
+      case 'vscode':
+        return VSCODE_ICONS.folder || '📁';
+      case 'material':
+        return MATERIAL_ICONS.folder || '📁';
+      case 'nerd':
+        return NERD_FONTS_ICONS.folder || '📁';
+      case 'plain':
+      case 'ascii':
+        return '';
+      case 'emoji':
+      case 'unicode':
+      default:
+        return isOpen ? EMOJI_ICONS.folderOpen || '📂' : EMOJI_ICONS.folder || '📁';
+    }
+  }
+
+  getFileIcon(filename: string): string {
+    const ext = getExtension(filename).toLowerCase();
+    if (this.customIcons && this.customIcons[ext]) {
+      return this.customIcons[ext];
+    }
+
+    let iconMap: Record<string, string>;
+    let defaultIcon: string;
+
+    switch (this.pack) {
+      case 'vscode':
+        iconMap = VSCODE_ICONS;
+        defaultIcon = VSCODE_ICONS.file || '📄';
+        break;
+      case 'material':
+        iconMap = MATERIAL_ICONS;
+        defaultIcon = MATERIAL_ICONS.file || '📄';
+        break;
+      case 'nerd':
+        iconMap = NERD_FONTS_ICONS;
+        defaultIcon = NERD_FONTS_ICONS.file || '📄';
+        break;
+      case 'emoji':
+      case 'unicode':
+      default:
+        iconMap = EMOJI_ICONS;
+        defaultIcon = EMOJI_ICONS.file || '📄';
+        break;
+    }
+
+    return iconMap[filename] || iconMap[ext] || defaultIcon || '';
   }
 
   resolveFile(filename: string): string {
-    if (this.pack.filenames[filename]) {
-      return this.pack.filenames[filename];
-    }
-    const ext = getExtension(filename);
-    if (ext && this.pack.extensions[ext]) {
-      return this.pack.extensions[ext];
-    }
-    return this.pack.file;
+    return this.getFileIcon(filename);
   }
 }

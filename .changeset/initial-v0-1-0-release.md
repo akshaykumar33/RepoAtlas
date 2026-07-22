@@ -1,17 +1,17 @@
 ---
-'@repo-atlas/core': minor
-'@repo-atlas/renderers': minor
-'@repo-atlas/exporters': minor
-'@repo-atlas/detector': minor
-'@repo-atlas/icons': minor
-'@repo-atlas/config': minor
-'@repo-atlas/utils': minor
-'@repo-atlas/cli': minor
-'@repo-atlas/vscode': minor
-'@repo-atlas/github-action': minor
+'@repoatlasdev/core': minor
+'@repoatlasdev/renderers': minor
+'@repoatlasdev/exporters': minor
+'@repoatlasdev/detector': minor
+'@repoatlasdev/icons': minor
+'@repoatlasdev/config': minor
+'@repoatlasdev/utils': minor
+'@repoatlasdev/cli': minor
+'repo-atlas-vscode': minor
+'@repoatlasdev/github-action': minor
 ---
 
-Initial v0.1.0 release of RepoAtlas developer platform.
+Initial v0.1.0 release of RepoAtlas developer platform under @repoatlasdev scope.
 
 Includes:
 

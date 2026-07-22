@@ -1,26 +1,31 @@
-import { TreeNode } from '@repo-atlas/core';
+import { TreeNode } from '@repoatlasdev/core';
 import { ExporterPlugin, ExportResult } from '../types';
 
 export class MermaidExporter implements ExporterPlugin {
   readonly name = 'mermaid';
-  readonly fileExtension = 'mmd';
-  readonly mimeType = 'text/x-mermaid';
+  readonly fileExtension = 'mermaid';
+  readonly mimeType = 'text/plain';
 
   export(tree: TreeNode): ExportResult {
     const lines: string[] = ['graph TD'];
     let counter = 0;
 
-    function processNode(node: TreeNode, parentId?: string) {
-      const id = `n_${++counter}`;
-      lines.push(`  ${id}["${node.name}"]`);
+    function processNode(node: TreeNode, parentId?: string): string {
+      const currentId = `node_${counter++}`;
+      const isDir = node.type === 'directory';
+      const shape = isDir ? `["📁 ${node.name}"]` : `["📄 ${node.name}"]`;
+
+      lines.push(`  ${currentId}${shape}`);
       if (parentId) {
-        lines.push(`  ${parentId} --> ${id}`);
+        lines.push(`  ${parentId} --> ${currentId}`);
       }
+
       if (node.children) {
         for (const child of node.children) {
-          processNode(child, id);
+          processNode(child, currentId);
         }
       }
+      return currentId;
     }
 
     processNode(tree);
@@ -30,7 +35,7 @@ export class MermaidExporter implements ExporterPlugin {
       fileExtension: this.fileExtension,
       mimeType: this.mimeType,
       content: lines.join('\n'),
-      filename: `${tree.name}-diagram.mmd`,
+      filename: `${tree.name}-diagram.mermaid`,
     };
   }
 }

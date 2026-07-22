@@ -1,35 +1,29 @@
-import { TreeNode } from '@repo-atlas/core';
-import { RenderOptions, RenderedOutput, RendererPlugin } from '../types';
+import { TreeNode } from '@repoatlasdev/core';
+import { BaseTreeRenderer } from '../engine/base';
+import { IconResolver } from '@repoatlasdev/icons';
 
-export const markdownRendererPlugin: RendererPlugin = {
-  name: 'markdown',
-  description: 'Markdown code block tree renderer',
-  fileExtension: 'md',
-  render(tree: TreeNode, _options?: RenderOptions): RenderedOutput {
-    const lines: string[] = ['```', tree.name];
+export class MarkdownTreeRenderer extends BaseTreeRenderer {
+  readonly name = 'markdown';
 
-    function renderNode(node: TreeNode, indent: string) {
-      if (!node.children || node.children.length === 0) return;
+  protected renderNode(
+    node: TreeNode,
+    prefix: string,
+    isLast: boolean,
+    ctx: { iconResolver: IconResolver; useColor: boolean; showSize: boolean; maxDepth: number },
+    depth: number
+  ): string {
+    const indent = '  '.repeat(depth);
+    const icon = ctx.iconResolver.getFileIcon(node.name);
+    let line = `${indent}- ${icon ? `${icon} ` : ''}**${node.name}**\n`;
 
-      node.children.forEach((child, index) => {
-        const isLast = index === node.children!.length - 1;
-        const connector = isLast ? '└── ' : '├── ';
-        const nextIndent = indent + (isLast ? '    ' : '│   ');
-
-        lines.push(`${indent}${connector}${child.name}`);
-
-        if (child.type === 'directory') {
-          renderNode(child, nextIndent);
+    if (node.children && depth < ctx.maxDepth) {
+      for (let i = 0; i < node.children.length; i++) {
+        const child = node.children[i];
+        if (child) {
+          line += this.renderNode(child, prefix, i === node.children.length - 1, ctx, depth + 1);
         }
-      });
+      }
     }
-
-    renderNode(tree, '');
-    lines.push('```');
-
-    return {
-      format: 'markdown',
-      content: lines.join('\n'),
-    };
-  },
-};
+    return line;
+  }
+}

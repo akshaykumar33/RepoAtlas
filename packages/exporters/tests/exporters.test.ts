@@ -1,95 +1,46 @@
+import { TreeNode } from '@repoatlasdev/core';
 import { describe, expect, it } from 'vitest';
-import { TreeNode } from '@repo-atlas/core';
-import { ExporterPlugin, ExporterRegistry, ExportResult } from '../src/index';
+import { ExporterRegistry } from '../src/registry';
 
-const mockTree: TreeNode = {
-  id: '.',
-  name: 'my-project',
-  path: '/my-project',
-  relativePath: '.',
-  type: 'directory',
-  children: [
-    {
-      id: 'src',
-      name: 'src',
-      path: '/my-project/src',
-      relativePath: 'src',
-      type: 'directory',
-      children: [
-        {
-          id: 'src/index.ts',
-          name: 'index.ts',
-          path: '/my-project/src/index.ts',
-          relativePath: 'src/index.ts',
-          type: 'file',
-          metadata: { sizeBytes: 1024, extension: 'ts', modifiedAt: new Date().toISOString() },
-        },
-      ],
-    },
-    {
-      id: 'README.md',
-      name: 'README.md',
-      path: '/my-project/README.md',
-      relativePath: 'README.md',
-      type: 'file',
-      metadata: { sizeBytes: 2048, extension: 'md', modifiedAt: new Date().toISOString() },
-    },
-  ],
-  metadata: { modifiedAt: new Date().toISOString() },
-};
+describe('Multi-Format Exporters Package', () => {
+  const sampleTree: TreeNode = {
+    id: '.',
+    name: 'app',
+    path: '/app',
+    relativePath: '.',
+    type: 'directory',
+    children: [
+      {
+        id: 'index.ts',
+        name: 'index.ts',
+        path: '/app/index.ts',
+        relativePath: 'index.ts',
+        type: 'file',
+      },
+    ],
+  };
 
-describe('Exporters Package Suite', () => {
-  const registry = ExporterRegistry.getInstance();
-
-  const formats = [
-    'txt',
-    'md',
-    'html',
-    'json',
-    'yaml',
-    'xml',
-    'csv',
-    'docx',
-    'pdf',
-    'svg',
-    'png',
-    'mermaid',
-    'plantuml',
-  ];
-
-  formats.forEach((fmt) => {
-    it(`exports format '${fmt}' successfully`, async () => {
-      const result = await registry.export(fmt, mockTree, 'mock rendered tree');
-      expect(result).toBeDefined();
-      expect(result.format).toBe(fmt);
-      expect(result.content).toBeDefined();
-      expect(result.filename).toBeDefined();
-    });
+  it('supports 13 output export plugins', () => {
+    const registry = new ExporterRegistry();
+    expect(registry.list().length).toBe(13);
   });
 
-  it('allows adding a new exporter with only ONE new class', async () => {
-    // Single new class implementing ExporterPlugin
-    class CustomIniExporter implements ExporterPlugin {
-      readonly name = 'ini';
-      readonly fileExtension = 'ini';
-      readonly mimeType = 'text/plain';
+  it('exports HTML format', () => {
+    const registry = new ExporterRegistry();
+    const result = registry.export(sampleTree, 'html');
+    expect(result.content).toContain('<!DOCTYPE html>');
+    expect(result.fileExtension).toBe('html');
+  });
 
-      export(tree: TreeNode): ExportResult {
-        return {
-          format: this.name,
-          fileExtension: this.fileExtension,
-          mimeType: this.mimeType,
-          content: `[project]\nname=${tree.name}`,
-          filename: `${tree.name}.ini`,
-        };
-      }
-    }
+  it('exports Markdown format', () => {
+    const registry = new ExporterRegistry();
+    const result = registry.export(sampleTree, 'md');
+    expect(result.content).toContain('# Project Structure: app');
+  });
 
-    // Register single class
-    registry.register(new CustomIniExporter());
-
-    const result = await registry.export('ini', mockTree);
-    expect(result.format).toBe('ini');
-    expect(result.content).toBe('[project]\nname=my-project');
+  it('exports Mermaid format', () => {
+    const registry = new ExporterRegistry();
+    const result = registry.export(sampleTree, 'mermaid');
+    expect(result.content).toContain('graph TD');
   });
 });

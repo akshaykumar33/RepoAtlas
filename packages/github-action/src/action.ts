@@ -1,102 +1,83 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { exec } from 'node:child_process';
-import { promisify } from 'node:util';
-import { scanRepository } from '@repo-atlas/core';
-import { RendererRegistry } from '@repo-atlas/renderers';
-import { ExporterRegistry } from '@repo-atlas/exporters';
-import { IconPack, IconResolver } from '@repo-atlas/icons';
+import * as core from '@actions/core';
+import * as exec from '@actions/exec';
+import { scanRepository } from '@repoatlasdev/core';
+import { ExporterRegistry } from '@repoatlasdev/exporters';
+import { IconPack, IconResolver } from '@repoatlasdev/icons';
+import { RendererRegistry } from '@repoatlasdev/renderers';
 
-const execAsync = promisify(exec);
+export async function runAction(): Promise<void> {
+  try {
+    const targetDirInput = core.getInput('target_dir') || '.';
+    const outputFile = core.getInput('output_file') || 'PROJECT_STRUCTURE.md';
+    const theme = core.getInput('theme') || 'unicode';
+    const iconPack = core.getInput('icons') || 'emoji';
+    const maxDepthInput = core.getInput('depth');
+    const sortBy = core.getInput('sort') || 'name';
+    const only = core.getInput('only') || 'all';
+    const generateMermaid = core.getInput('generate_mermaid') === 'true';
+    const autoCommit = core.getInput('auto_commit') === 'true';
+    const commitMessage =
+      core.getInput('commit_message') ||
+      'docs: update repository structure visualization [skip ci]';
 
-export interface ActionInputs {
-  targetDir?: string;
-  outputFile?: string;
-  theme?: string;
-  icons?: string;
-  depth?: number;
-  sort?: 'name' | 'size' | 'type' | 'date';
-  only?: 'all' | 'files' | 'directories';
-  exclude?: string[];
-  include?: string[];
-  compact?: boolean;
-  generateMermaid?: boolean;
-  autoCommit?: boolean;
-  commitMessage?: string;
-}
+    const rootDir = path.resolve(process.cwd(), targetDirInput);
+    const maxDepth = maxDepthInput ? parseInt(maxDepthInput, 10) : Infinity;
 
-export async function runAction(
-  inputs: ActionInputs
-): Promise<{ structurePath: string; mermaidPath?: string }> {
-  const rootDir = path.resolve(inputs.targetDir || process.env.INPUT_TARGET_DIR || '.');
-  const outputFile = inputs.outputFile || process.env.INPUT_OUTPUT_FILE || 'PROJECT_STRUCTURE.md';
-  const theme = inputs.theme || process.env.INPUT_THEME || 'unicode';
-  const icons = inputs.icons || process.env.INPUT_ICONS || 'emoji';
-  const depth =
-    inputs.depth ?? (process.env.INPUT_DEPTH ? parseInt(process.env.INPUT_DEPTH, 10) : undefined);
-  const sort = inputs.sort || (process.env.INPUT_SORT as ActionInputs['sort']) || 'name';
-  const only = inputs.only || (process.env.INPUT_ONLY as ActionInputs['only']) || 'all';
-  const compact = inputs.compact ?? process.env.INPUT_COMPACT === 'true';
-  const generateMermaid = inputs.generateMermaid ?? process.env.INPUT_GENERATE_MERMAID === 'true';
-  const autoCommit = inputs.autoCommit ?? process.env.INPUT_AUTO_COMMIT !== 'false';
-  const commitMessage =
-    inputs.commitMessage ||
-    process.env.INPUT_COMMIT_MESSAGE ||
-    'docs(repo-atlas): update project structure visualizer';
+    core.info(`🔍 Scanning repository at: ${rootDir}`);
+    const tree = await scanRepository({
+      rootDir,
+      maxDepth,
+      sortBy: sortBy as 'name' | 'size' | 'type',
+      only: only as 'all' | 'files' | 'directories',
+    });
 
-  const rawExclude =
-    inputs.exclude || (process.env.INPUT_EXCLUDE ? process.env.INPUT_EXCLUDE.split(/[\s,]+/) : []);
+    const rendererRegistry = new RendererRegistry();
+    const iconResolver = new IconResolver(iconPack as IconPack);
+    const renderedContent = rendererRegistry.render(tree, theme, { iconResolver });
 
-  // Scan repository
-  const tree = await scanRepository({
-    rootDir,
-    maxDepth: depth,
-    sortBy: sort,
-    only,
-    excludePatterns: rawExclude,
-    respectGitIgnore: true,
-  });
+    const outputPath = path.resolve(rootDir, outputFile);
+    await fs.writeFile(outputPath, renderedContent, 'utf-8');
+    core.info(`✅ Generated repository structure at: ${outputPath}`);
 
-  const rendererRegistry = RendererRegistry.getInstance();
-  const exporterRegistry = ExporterRegistry.getInstance();
-  const iconResolver = new IconResolver({ pack: icons as IconPack });
+    if (generateMermaid) {
+      const exporterRegistry = new ExporterRegistry();
+      const mermaidResult = exporterRegistry.export(tree, 'mermaid');
+      const mermaidPath = path.resolve(rootDir, 'MERMAID.md');
+      await fs.writeFile(mermaidPath, String(mermaidResult.content), 'utf-8');
+      core.info(`🎨 Generated Mermaid diagram at: ${mermaidPath}`);
+    }
 
-  const rendered = await rendererRegistry.render(theme, tree, {
-    compact,
-    showIcons: true,
-    iconResolver,
-  });
-
-  // Export structure document (Markdown)
-  const mdExport = await exporterRegistry.export('md', tree, rendered.content);
-  const structurePath = path.resolve(rootDir, outputFile);
-  await fs.writeFile(structurePath, mdExport.content, 'utf-8');
-
-  let mermaidPath: string | undefined = undefined;
-  if (generateMermaid) {
-    const mermaidExport = await exporterRegistry.export('mermaid', tree);
-    mermaidPath = path.resolve(rootDir, 'MERMAID.md');
-    const mmdContent = `# Architecture Diagram - ${tree.name}\n\n\`\`\`mermaid\n${mermaidExport.content}\n\`\`\`\n`;
-    await fs.writeFile(mermaidPath, mmdContent, 'utf-8');
-  }
-
-  // Auto-commit git changes if enabled and running in git env
-  if (autoCommit) {
-    try {
-      await execAsync('git config user.name "github-actions[bot]"', { cwd: rootDir });
-      await execAsync('git config user.email "github-actions[bot]@users.noreply.github.com"', {
-        cwd: rootDir,
-      });
-      await execAsync(`git add "${structurePath}"`, { cwd: rootDir });
-      if (mermaidPath) {
-        await execAsync(`git add "${mermaidPath}"`, { cwd: rootDir });
+    if (autoCommit) {
+      core.info('🤖 Automating git commit and push...');
+      await exec.exec('git', ['config', 'user.name', 'github-actions[bot]']);
+      await exec.exec('git', [
+        'config',
+        'user.email',
+        'github-actions[bot]@users.noreply.github.com',
+      ]);
+      await exec.exec('git', ['add', outputFile]);
+      if (generateMermaid) {
+        await exec.exec('git', ['add', 'MERMAID.md']);
       }
-      await execAsync(`git commit -m "${commitMessage}"`, { cwd: rootDir });
-      await execAsync('git push', { cwd: rootDir });
-    } catch {
-      // Git commit or push ignored if no changes detected or non-git env
+
+      const statusExit = await exec.exec('git', ['diff', '--staged', '--quiet'], {
+        ignoreReturnCode: true,
+      });
+      if (statusExit !== 0) {
+        await exec.exec('git', ['commit', '-m', commitMessage]);
+        await exec.exec('git', ['push']);
+        core.info('🚀 Repository structure changes committed and pushed cleanly!');
+      } else {
+        core.info('ℹ️ No changes detected in structure output.');
+      }
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      core.setFailed(`RepoAtlas Action Failed: ${error.message}`);
+    } else {
+      core.setFailed(`RepoAtlas Action Failed: ${String(error)}`);
     }
   }
-
-  return { structurePath, mermaidPath };
 }

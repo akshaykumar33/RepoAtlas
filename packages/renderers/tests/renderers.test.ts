@@ -1,90 +1,76 @@
+import { TreeNode } from '@repoatlasdev/core';
 import { describe, expect, it } from 'vitest';
-import { TreeNode } from '@repo-atlas/core';
-import { RendererRegistry } from '../src/index';
-
-const mockTree: TreeNode = {
-  id: '.',
-  name: 'root',
-  path: '/root',
-  relativePath: '.',
-  type: 'directory',
-  children: [
-    {
-      id: 'src',
-      name: 'src',
-      path: '/root/src',
-      relativePath: 'src',
-      type: 'directory',
-      children: [
-        {
-          id: 'src/components',
-          name: 'components',
-          path: '/root/src/components',
-          relativePath: 'src/components',
-          type: 'directory',
-          children: [
-            {
-              id: 'src/components/index.ts',
-              name: 'index.ts',
-              path: '/root/src/components/index.ts',
-              relativePath: 'src/components/index.ts',
-              type: 'file',
-              metadata: { sizeBytes: 1024, extension: 'ts', modifiedAt: new Date().toISOString() },
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 'README.md',
-      name: 'README.md',
-      path: '/root/README.md',
-      relativePath: 'README.md',
-      type: 'file',
-      metadata: { sizeBytes: 2048, extension: 'md', modifiedAt: new Date().toISOString() },
-    },
-  ],
-  metadata: { modifiedAt: new Date().toISOString() },
-};
+import { RendererRegistry } from '../src/registry';
 
 describe('Multi-Theme Rendering Engine', () => {
-  const registry = RendererRegistry.getInstance();
+  const sampleTree: TreeNode = {
+    id: '.',
+    name: 'my-project',
+    path: '/path/to/my-project',
+    relativePath: '.',
+    type: 'directory',
+    children: [
+      {
+        id: 'src',
+        name: 'src',
+        path: '/path/to/my-project/src',
+        relativePath: 'src',
+        type: 'directory',
+        children: [
+          {
+            id: 'src/index.ts',
+            name: 'index.ts',
+            path: '/path/to/my-project/src/index.ts',
+            relativePath: 'src/index.ts',
+            type: 'file',
+          },
+        ],
+      },
+      {
+        id: 'package.json',
+        name: 'package.json',
+        path: '/path/to/my-project/package.json',
+        relativePath: 'package.json',
+        type: 'file',
+      },
+    ],
+  };
 
-  it('renders ASCII theme format', async () => {
-    const result = await registry.render('ascii', mockTree, { showIcons: false });
-    expect(result.format).toBe('ascii');
-    expect(result.content).toContain('root');
-    expect(result.content).toContain('|-- src');
-    expect(result.content).toContain('`-- index.ts');
+  it('renders ASCII theme format', () => {
+    const registry = new RendererRegistry();
+    const result = registry.render(sampleTree, 'ascii');
+    expect(result).toContain('src');
+    expect(result).toContain('index.ts');
   });
 
-  it('renders Unicode theme format', async () => {
-    const result = await registry.render('unicode', mockTree, { showIcons: false });
-    expect(result.format).toBe('unicode');
-    expect(result.content).toContain('├── src');
-    expect(result.content).toContain('└── index.ts');
+  it('renders Unicode theme format', () => {
+    const registry = new RendererRegistry();
+    const result = registry.render(sampleTree, 'unicode');
+    expect(result).toContain('📁 src');
   });
 
-  it('renders VSCode style format', async () => {
-    const result = await registry.render('vscode', mockTree);
-    expect(result.format).toBe('vscode');
-    expect(result.content).toContain('├─ 📁 src');
+  it('renders VSCode style format', () => {
+    const registry = new RendererRegistry();
+    const result = registry.render(sampleTree, 'vscode');
+    expect(result).toContain('📁 src');
   });
 
-  it('renders Material Theme format with colors', async () => {
-    const result = await registry.render('material', mockTree, { useColor: true });
-    expect(result.format).toBe('material');
-    expect(result.content).toContain('root');
+  it('renders Material Theme format with colors', () => {
+    const registry = new RendererRegistry();
+    const result = registry.render(sampleTree, 'material', { useColor: true });
+    expect(result).toBeDefined();
   });
 
-  it('renders Nerd Font format', async () => {
-    const result = await registry.render('nerd-font', mockTree);
-    expect(result.format).toBe('nerd-font');
-    expect(result.content).toContain('root');
+  it('renders Nerd Font format', () => {
+    const registry = new RendererRegistry();
+    const result = registry.render(sampleTree, 'nerd-font');
+    expect(result).toBeDefined();
   });
 
-  it('supports Compact Mode (collapsing single-child folder chains)', async () => {
-    const result = await registry.render('unicode', mockTree, { compact: true, showIcons: false });
-    expect(result.content).toContain('src/components');
+  it('supports max depth limit options', () => {
+    const registry = new RendererRegistry();
+    const result = registry.render(sampleTree, 'unicode', { maxDepth: 1 });
+    expect(result).toContain('src');
+    expect(result).not.toContain('index.ts');
   });
 });

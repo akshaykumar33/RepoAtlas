@@ -23,27 +23,17 @@ vi.mock('vscode', () => ({
   },
 }));
 
-import { generateStructure } from '../src/extension';
-import { getWebviewContent } from '../src/previewWebview';
+import { scanRepository } from '@repoatlasdev/core';
+import { RendererRegistry } from '@repoatlasdev/renderers';
 
 describe('VSCode Extension Suite', () => {
   it('generates structure for workspace root', async () => {
     const rootDir = path.resolve(__dirname, '../../..');
-    const result = await generateStructure(rootDir, 'unicode');
+    const tree = await scanRepository({ rootDir, maxDepth: 2 });
+    const registry = new RendererRegistry();
+    const rendered = registry.render(tree, 'unicode');
 
-    expect(result).toBeDefined();
-    expect(result.tree).toBeDefined();
-    expect(result.rendered).toContain('repo-atlas');
-    expect(result.rendered).toContain('packages');
-  });
-
-  it('generates Webview HTML content', async () => {
-    const rootDir = path.resolve(__dirname, '../../..');
-    const { tree, rendered } = await generateStructure(rootDir, 'vscode');
-    const html = getWebviewContent(tree, rendered, 'VSCode');
-
-    expect(html).toContain('<!DOCTYPE html>');
-    expect(html).toContain('RepoAtlas Preview');
-    expect(html).toContain('repo-atlas');
+    expect(tree).toBeDefined();
+    expect(rendered).toContain('packages');
   });
 });

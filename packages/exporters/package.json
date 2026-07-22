@@ -1,5 +1,5 @@
 {
-  "name": "@repo-atlas/exporters",
+  "name": "@repoatlasdev/exporters",
   "version": "0.1.0",
   "description": "Multi-format exporter plugins for RepoAtlas project trees (HTML, Markdown, SVG, Mermaid, DOCX, PDF, CSV, etc.)",
   "type": "module",
@@ -30,9 +30,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@repo-atlas/core": "workspace:*",
-    "@repo-atlas/renderers": "workspace:*",
-    "@repo-atlas/utils": "workspace:*"
+    "@repoatlasdev/core": "workspace:*",
+    "@repoatlasdev/renderers": "workspace:*",
+    "@repoatlasdev/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

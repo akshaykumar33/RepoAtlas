@@ -1,4 +1,4 @@
-import { TreeNode } from '@repo-atlas/core';
+import { TreeNode } from '@repoatlasdev/core';
 import { ExporterPlugin, ExportResult } from '../types';
 
 export class JsonExporter implements ExporterPlugin {

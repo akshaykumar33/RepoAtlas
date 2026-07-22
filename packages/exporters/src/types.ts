@@ -1,10 +1,4 @@
-import { TreeNode } from '@repo-atlas/core';
-
-export interface ExportOptions {
-  title?: string;
-  theme?: string;
-  customOptions?: Record<string, unknown>;
-}
+import { TreeNode } from '@repoatlasdev/core';
 
 export interface ExportResult {
   format: string;
@@ -15,12 +9,9 @@ export interface ExportResult {
 }
 
 export interface ExporterPlugin {
-  name: string;
-  fileExtension: string;
-  mimeType: string;
-  export(
-    tree: TreeNode,
-    renderedContent?: string,
-    options?: ExportOptions
-  ): Promise<ExportResult> | ExportResult;
+  readonly name: string;
+  readonly fileExtension: string;
+  readonly mimeType: string;
+
+  export(tree: TreeNode): ExportResult;
 }

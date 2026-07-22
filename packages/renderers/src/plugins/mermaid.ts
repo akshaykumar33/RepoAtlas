@@ -1,39 +1,33 @@
-import { TreeNode } from '@repo-atlas/core';
-import { RenderOptions, RenderedOutput, RendererPlugin } from '../types';
+import { TreeNode } from '@repoatlasdev/core';
+import { BaseTreeRenderer } from '../engine/base';
+import { IconResolver } from '@repoatlasdev/icons';
 
-export const mermaidRendererPlugin: RendererPlugin = {
-  name: 'mermaid',
-  description: 'Mermaid graph diagram renderer',
-  fileExtension: 'mmd',
-  render(tree: TreeNode, _options?: RenderOptions): RenderedOutput {
-    const lines: string[] = ['graph TD'];
-    let idCounter = 0;
+export class MermaidTreeRenderer extends BaseTreeRenderer {
+  readonly name = 'mermaid';
 
-    function getId(): string {
-      return `node_${++idCounter}`;
-    }
-
-    function processNode(node: TreeNode, parentId?: string) {
-      const currentId = getId();
-      const label = `${currentId}["${node.name}"]`;
-      lines.push(`  ${label}`);
-
-      if (parentId) {
-        lines.push(`  ${parentId} --> ${currentId}`);
-      }
-
+  render(tree: TreeNode): string {
+    let out = 'graph TD\n';
+    function walk(node: TreeNode) {
       if (node.children) {
         for (const child of node.children) {
-          processNode(child, currentId);
+          const parentClean = node.name.replace(/[^a-zA-Z0-9_]/g, '_');
+          const childClean = child.name.replace(/[^a-zA-Z0-9_]/g, '_');
+          out += `  ${parentClean}["${node.name}"] --> ${childClean}["${child.name}"]\n`;
+          walk(child);
         }
       }
     }
+    walk(tree);
+    return out;
+  }
 
-    processNode(tree);
-
-    return {
-      format: 'mermaid',
-      content: lines.join('\n'),
-    };
-  },
-};
+  protected renderNode(
+    _node: TreeNode,
+    _prefix: string,
+    _isLast: boolean,
+    _ctx: { iconResolver: IconResolver; useColor: boolean; showSize: boolean; maxDepth: number },
+    _depth: number
+  ): string {
+    return '';
+  }
+}

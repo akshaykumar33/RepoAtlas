@@ -1,29 +1,30 @@
-import { ProjectInfo } from '@repo-atlas/detector';
+import { ProjectInfo } from '@repoatlasdev/detector';
 
 export type NodeType = 'file' | 'directory' | 'symlink';
-export type SortOption = 'name' | 'size' | 'type' | 'date';
-export type OnlyOption = 'files' | 'directories' | 'all';
+
+export type SortOption = 'name' | 'size' | 'type';
+
+export type OnlyOption = 'all' | 'files' | 'directories';
 
 export interface FileMetadata {
-  sizeBytes: number;
-  extension: string;
-  modifiedAt: string;
-  createdAt?: string;
+  sizeBytes?: number;
+  modifiedAt?: string;
+  extension?: string;
   isSymlink?: boolean;
   symlinkTarget?: string;
-  isIgnored?: boolean;
 }
 
 export interface DirectoryMetadata {
-  modifiedAt: string;
   fileCount?: number;
   directoryCount?: number;
   totalSizeBytes?: number;
+  modifiedAt?: string;
   projectInfo?: ProjectInfo;
   isSymlink?: boolean;
   symlinkTarget?: string;
-  isIgnored?: boolean;
 }
+
+export type NodeMetadata = FileMetadata | DirectoryMetadata;
 
 export interface TreeNode {
   id: string;
@@ -32,19 +33,17 @@ export interface TreeNode {
   relativePath: string;
   type: NodeType;
   children?: TreeNode[];
-  metadata: FileMetadata | DirectoryMetadata;
+  metadata?: NodeMetadata;
 }
 
 export interface ScanOptions {
   rootDir: string;
   maxDepth?: number;
   ignorePatterns?: string[];
-  includePatterns?: string[];
-  excludePatterns?: string[];
-  only?: OnlyOption;
-  sortBy?: SortOption;
   includeHidden?: boolean;
   respectGitIgnore?: boolean;
   followSymlinks?: boolean;
   detectProject?: boolean;
+  sortBy?: SortOption;
+  only?: OnlyOption;
 }

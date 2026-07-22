@@ -1,4 +1,4 @@
-import { TreeNode } from '@repo-atlas/core';
+import { TreeNode } from '@repoatlasdev/core';
 import { ExporterPlugin, ExportResult } from '../types';
 
 export class YamlExporter implements ExporterPlugin {
@@ -7,29 +7,22 @@ export class YamlExporter implements ExporterPlugin {
   readonly mimeType = 'text/yaml';
 
   export(tree: TreeNode): ExportResult {
-    const lines: string[] = [];
-
-    function toYaml(node: TreeNode, indent: string) {
-      lines.push(`${indent}name: "${node.name}"`);
-      lines.push(`${indent}type: "${node.type}"`);
-      lines.push(`${indent}path: "${node.relativePath}"`);
-
+    function renderYaml(node: TreeNode, indent = ''): string {
+      let yaml = `${indent}- name: "${node.name}"\n${indent}  type: "${node.type}"\n`;
       if (node.children && node.children.length > 0) {
-        lines.push(`${indent}children:`);
+        yaml += `${indent}  children:\n`;
         for (const child of node.children) {
-          lines.push(`${indent}  -`);
-          toYaml(child, `${indent}    `);
+          yaml += renderYaml(child, `${indent}    `);
         }
       }
+      return yaml;
     }
-
-    toYaml(tree, '');
 
     return {
       format: this.name,
       fileExtension: this.fileExtension,
       mimeType: this.mimeType,
-      content: lines.join('\n'),
+      content: renderYaml(tree),
       filename: `${tree.name}-tree.yaml`,
     };
   }

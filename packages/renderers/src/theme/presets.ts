@@ -32,10 +32,10 @@ export const VSCODE_THEME: ThemeConfig = {
     vertical: '│  ',
   },
   palette: {
-    directory: (t) => `\x1b[34m\x1b[1m${t}\x1b[0m`, // Bold Blue
-    file: (t) => `\x1b[37m${t}\x1b[0m`, // White
-    connector: (t) => `\x1b[90m${t}\x1b[0m`, // Gray
-    size: (t) => `\x1b[33m${t}\x1b[0m`, // Yellow
+    directory: (t: string) => `\x1b[34m\x1b[1m${t}\x1b[0m`, // Bold Blue
+    file: (t: string) => `\x1b[37m${t}\x1b[0m`, // White
+    connector: (t: string) => `\x1b[90m${t}\x1b[0m`, // Gray
+    size: (t: string) => `\x1b[33m${t}\x1b[0m`, // Yellow
   },
 };
 
@@ -49,10 +49,10 @@ export const MATERIAL_THEME: ThemeConfig = {
     vertical: '│   ',
   },
   palette: {
-    directory: (t) => `\x1b[36m\x1b[1m${t}\x1b[0m`, // Bold Cyan
-    file: (t) => `\x1b[32m${t}\x1b[0m`, // Green
-    connector: (t) => `\x1b[35m${t}\x1b[0m`, // Magenta
-    size: (t) => `\x1b[33m${t}\x1b[0m`, // Yellow
+    directory: (t: string) => `\x1b[36m\x1b[1m${t}\x1b[0m`, // Bold Cyan
+    file: (t: string) => `\x1b[32m${t}\x1b[0m`, // Green
+    connector: (t: string) => `\x1b[35m${t}\x1b[0m`, // Magenta
+    size: (t: string) => `\x1b[33m${t}\x1b[0m`, // Yellow
   },
 };
 
@@ -66,9 +66,9 @@ export const NERD_FONT_THEME: ThemeConfig = {
     vertical: '│   ',
   },
   palette: {
-    directory: (t) => `\x1b[33m\x1b[1m${t}\x1b[0m`, // Bold Yellow
-    file: (t) => `\x1b[36m${t}\x1b[0m`, // Cyan
-    connector: (t) => `\x1b[90m${t}\x1b[0m`, // Gray
+    directory: (t: string) => `\x1b[33m\x1b[1m${t}\x1b[0m`, // Bold Yellow
+    file: (t: string) => `\x1b[36m${t}\x1b[0m`, // Cyan
+    connector: (t: string) => `\x1b[90m${t}\x1b[0m`, // Gray
   },
 };
 

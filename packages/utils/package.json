@@ -1,5 +1,5 @@
 {
-  "name": "@repo-atlas/utils",
+  "name": "@repoatlasdev/utils",
   "version": "0.1.0",
   "description": "Pure path and string formatting helper utilities for RepoAtlas",
   "type": "module",
