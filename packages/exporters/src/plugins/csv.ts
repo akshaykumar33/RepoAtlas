@@ -9,6 +9,10 @@ export class CsvExporter implements ExporterPlugin {
   export(tree: TreeNode): ExportResult {
     const rows: string[] = ['"Path","Name","Type","SizeBytes","ModifiedAt"'];
 
+    function escapeCsv(val: string): string {
+      return val.replace(/"/g, '""');
+    }
+
     function processNode(node: TreeNode) {
       let size = 0;
       if (node.type === 'file') {
@@ -18,11 +22,16 @@ export class CsvExporter implements ExporterPlugin {
       }
 
       const modDate = node.metadata?.modifiedAt ?? '';
-      rows.push(`"${node.relativePath}","${node.name}","${node.type}",${size},"${modDate}"`);
+      rows.push(
+        `"${escapeCsv(node.relativePath)}","${escapeCsv(node.name)}","${node.type}",${size},"${escapeCsv(modDate)}"`
+      );
 
       if (node.children) {
-        for (const child of node.children) {
-          processNode(child);
+        for (let i = 0; i < node.children.length; i++) {
+          const child = node.children[i];
+          if (child) {
+            processNode(child);
+          }
         }
       }
     }

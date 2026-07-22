@@ -56,9 +56,7 @@ export async function scanRepository(options: ScanOptions): Promise<TreeNode> {
     }
 
     // Only filter check
-    if (only === 'files' && isDirectory && currentDepth > 0) {
-      // In 'files' only mode, we still scan subdirectories to find files, but filter empty directories afterwards
-    } else if (only === 'directories' && !isDirectory) {
+    if (only === 'directories' && !isDirectory) {
       return null;
     }
 
@@ -118,15 +116,20 @@ export async function scanRepository(options: ScanOptions): Promise<TreeNode> {
       return node;
     }
 
+    // Parallel child scanning for high throughput performance
+    const childTasks = entries.map((entryName) => {
+      const childPath = path.join(currentPath, entryName);
+      return scanNode(childPath, currentDepth + 1);
+    });
+
+    const scannedChildren = await Promise.all(childTasks);
+
     const children: TreeNode[] = [];
     let fileCount = 0;
     let directoryCount = 0;
     let totalSizeBytes = 0;
 
-    for (const entryName of entries) {
-      const childPath = path.join(currentPath, entryName);
-      const childNode = await scanNode(childPath, currentDepth + 1);
-
+    for (const childNode of scannedChildren) {
       if (childNode) {
         children.push(childNode);
         if (childNode.type === 'directory') {
