@@ -17,20 +17,21 @@ export const DOCS_DATA: Record<string, DocItem> = {
       'RepoAtlas transforms any repository into beautiful, configurable, documentation-ready visual project structures.',
     readingTime: '3 min read',
     lastUpdated: 'July 22, 2026',
-    content: `
-RepoAtlas is an open-source developer platform designed to make software repositories readable, understandable, and visually stunning.
+    content: `RepoAtlas is an open-source developer platform designed to make software repositories readable, understandable, and visually stunning.
 
-It is **NOT** just another CLI tree command.
+> It is **NOT** just another CLI tree command — it's the **Prettier + ESLint equivalent for repository visualization**.
+
+---
 
 ### Why RepoAtlas?
 
 Traditional \`tree\` output lacks contextual icons, theme palettes, Markdown formatting, and exporter plugins. RepoAtlas provides:
 
-- 🚀 **High-Throughput Core**: Scans 100,000+ files in sub-milliseconds.
-- 🎨 **Multi-Theme Engine**: Render in VSCode, Material, Unicode, Nerd Font, ASCII, Markdown, and Mermaid.
-- 📦 **13 Exporter Formats**: Export trees to \`md\`, \`html\`, \`json\`, \`yaml\`, \`xml\`, \`csv\`, \`docx\`, \`pdf\`, \`svg\`, \`png\`, and \`mermaid\`.
-- 🤖 **AI Prompt Generator**: Compress repo trees into token-optimized context for LLMs.
-- ⚡ **VSCode & GitHub Action Integration**: Visualize in VS Code Explorer or auto-commit in CI/CD workflows.
+- 🚀 **High-Throughput Core** — Scans 100,000+ files in sub-milliseconds using async filesystem APIs
+- 🎨 **Multi-Theme Engine** — Render in VSCode, Material, Unicode, Nerd Font, ASCII, Markdown, and Mermaid
+- 📦 **13 Exporter Formats** — Export trees to \`md\`, \`html\`, \`json\`, \`yaml\`, \`xml\`, \`csv\`, \`docx\`, \`pdf\`, \`svg\`, \`png\`, and \`mermaid\`
+- 🤖 **AI Prompt Generator** — Compress repo trees into token-optimized context for LLMs
+- ⚡ **VSCode & GitHub Action** — Visualize in VS Code Explorer or auto-commit in CI/CD workflows
 
 ---
 
@@ -39,7 +40,43 @@ Traditional \`tree\` output lacks contextual icons, theme palettes, Markdown for
 Every repository scan in RepoAtlas moves strictly through a unidirectional architecture:
 
 \`\`\`
-Filesystem ➔ Scanner ➔ Tree Model ➔ Transformer ➔ Renderer ➔ Exporter ➔ Output
+Filesystem → Scanner → Tree Model → Transformer → Renderer → Exporter → Output
+\`\`\`
+
+This ensures clean separation of concerns and allows every layer to be independently extended via plugins.
+
+---
+
+### Package Ecosystem
+
+| Package | Description |
+| :--- | :--- |
+| \`@repoatlasdev/core\` | Scanner, parser, TreeNode model |
+| \`@repoatlasdev/renderers\` | Multi-theme rendering engine |
+| \`@repoatlasdev/exporters\` | Format exporters (Markdown, Mermaid, JSON, etc.) |
+| \`@repoatlasdev/icons\` | Icon pack mapping & symbol lookup |
+| \`@repoatlasdev/config\` | Config file loader |
+| \`@repoatlasdev/detector\` | Framework & language detection |
+| \`@repoatlasdev/utils\` | Pure functional utilities |
+| \`@repoatlasdev/cli\` | Command-line interface |
+
+---
+
+### Quick Start
+
+Install the CLI globally and generate your first structure:
+
+\`\`\`bash
+npm install -g @repoatlasdev/cli
+
+# Generate a tree visualization
+repo-atlas generate ./my-project
+
+# Generate with a specific theme
+repo-atlas generate ./my-project --theme material --icons emoji
+
+# Export as Markdown
+repo-atlas generate ./my-project --theme markdown --output PROJECT_STRUCTURE.md
 \`\`\`
 `,
   },
@@ -50,27 +87,89 @@ Filesystem ➔ Scanner ➔ Tree Model ➔ Transformer ➔ Renderer ➔ Exporter 
     description: 'Complete reference for the @repoatlasdev/cli command line tool.',
     readingTime: '4 min read',
     lastUpdated: 'July 22, 2026',
-    content: `
-The \`@repoatlasdev/cli\` package provides a fast, predictable CLI tool for generating repository visualizations.
+    content: `The \`@repoatlasdev/cli\` package provides a fast, predictable CLI tool for generating repository visualizations.
+
+---
+
+### Installation
+
+\`\`\`bash
+# Global install
+npm install -g @repoatlasdev/cli
+
+# Or run with npx (no install)
+npx @repoatlasdev/cli generate .
+\`\`\`
+
+---
 
 ### Primary Commands
 
 #### \`repo-atlas generate [dir]\`
+
 Generates a visual repository tree.
 
-**Options:**
-- \`-t, --theme <name>\`: Specify theme (\`unicode\`, \`vscode\`, \`material\`, \`nerd-font\`, \`markdown\`, \`json\`, \`mermaid\`)
-- \`-i, --icons <pack>\`: Specify icon pack (\`emoji\`, \`vscode\`, \`material\`, \`nerd\`, \`none\`)
-- \`-d, --depth <number>\`: Maximum scan recursion depth
-- \`-s, --sort <type>\`: Sort strategy (\`name\`, \`size\`, \`type\`)
-- \`--only <type>\`: Filter node display (\`all\`, \`files\`, \`directories\`)
-- \`-o, --output <file>\`: Output file path
+| Option | Alias | Description | Default |
+| :--- | :--- | :--- | :--- |
+| \`--theme <name>\` | \`-t\` | Rendering theme | \`unicode\` |
+| \`--icons <pack>\` | \`-i\` | Icon pack | \`emoji\` |
+| \`--depth <number>\` | \`-d\` | Max recursion depth | \`10\` |
+| \`--sort <type>\` | \`-s\` | Sort strategy (\`name\`, \`size\`, \`type\`) | \`name\` |
+| \`--only <type>\` | | Filter nodes (\`all\`, \`files\`, \`directories\`) | \`all\` |
+| \`--output <file>\` | \`-o\` | Output file path | stdout |
+
+**Example:**
+
+\`\`\`bash
+repo-atlas generate ./my-project --theme vscode --icons material --depth 5 --output STRUCTURE.md
+\`\`\`
+
+---
 
 #### \`repo-atlas preview [dir]\`
+
 Launches a live interactive watcher that re-renders the tree structure in real-time as files change.
 
+\`\`\`bash
+repo-atlas preview ./my-project --theme material
+\`\`\`
+
+---
+
 #### \`repo-atlas doctor\`
+
 Executes environment health diagnostics, checking Node version, platform, and registered plugins.
+
+\`\`\`bash
+repo-atlas doctor
+\`\`\`
+
+---
+
+### Available Themes
+
+| Theme | Description |
+| :--- | :--- |
+| \`unicode\` | Clean Unicode box-drawing characters |
+| \`vscode\` | VS Code-native file tree style |
+| \`material\` | Material Design icons & colors |
+| \`nerd-font\` | Nerd Font glyphs |
+| \`ascii\` | Classic ASCII pipes & dashes |
+| \`markdown\` | Markdown-formatted nested lists |
+| \`json\` | Structured JSON output |
+| \`mermaid\` | Mermaid.js diagram syntax |
+
+---
+
+### Available Icon Packs
+
+| Pack | Description |
+| :--- | :--- |
+| \`emoji\` | Colorful emoji icons (📁 📄 ⚙️) |
+| \`vscode\` | VS Code file icons |
+| \`material\` | Material Design file icons |
+| \`nerd\` | Nerd Font devicons |
+| \`none\` | No icons |
 `,
   },
   config: {
@@ -81,10 +180,38 @@ Executes environment health diagnostics, checking Node version, platform, and re
       'Configure RepoAtlas project defaults using repo-atlas.config.json or .repo-atlasrc.',
     readingTime: '2 min read',
     lastUpdated: 'July 22, 2026',
-    content: `
-RepoAtlas automatically resolves configuration options from \`repo-atlas.config.json\` or \`.repo-atlasrc\` located in your project root.
+    content: `RepoAtlas automatically resolves configuration options from your project root. CLI arguments always override configuration file values.
 
-### Sample \`repo-atlas.config.json\`
+---
+
+### Supported Config Files
+
+| File | Format |
+| :--- | :--- |
+| \`repo-atlas.config.json\` | JSON |
+| \`repo-atlas.config.yaml\` | YAML |
+| \`repo-atlas.config.ts\` | TypeScript |
+| \`repo-atlas.config.js\` | JavaScript |
+| \`.repo-atlasrc\` | JSON |
+
+---
+
+### Configuration Options
+
+| Option | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| \`theme\` | \`string\` | \`"unicode"\` | Default rendering theme |
+| \`iconPack\` | \`string\` | \`"emoji"\` | Default icon pack |
+| \`maxDepth\` | \`number\` | \`10\` | Maximum recursion depth |
+| \`sort\` | \`string\` | \`"name"\` | Sort strategy |
+| \`only\` | \`string\` | \`"all"\` | Filter nodes |
+| \`respectGitIgnore\` | \`boolean\` | \`true\` | Honor .gitignore rules |
+| \`ignorePatterns\` | \`string[]\` | \`[]\` | Additional glob patterns to ignore |
+| \`outputFile\` | \`string\` | \`undefined\` | Default output file path |
+
+---
+
+### Example: \`repo-atlas.config.json\`
 
 \`\`\`json
 {
@@ -102,6 +229,22 @@ RepoAtlas automatically resolves configuration options from \`repo-atlas.config.
   "outputFile": "PROJECT_STRUCTURE.md"
 }
 \`\`\`
+
+---
+
+### Example: \`repo-atlas.config.ts\`
+
+\`\`\`typescript
+import { defineConfig } from '@repoatlasdev/config';
+
+export default defineConfig({
+  theme: 'material',
+  iconPack: 'vscode',
+  maxDepth: 6,
+  respectGitIgnore: true,
+  ignorePatterns: ['*.log', 'coverage/', '.cache/'],
+});
+\`\`\`
 `,
   },
   'github-action': {
@@ -111,10 +254,13 @@ RepoAtlas automatically resolves configuration options from \`repo-atlas.config.
     description: 'Automate PROJECT_STRUCTURE.md generation in GitHub Actions CI/CD workflows.',
     readingTime: '3 min read',
     lastUpdated: 'July 22, 2026',
-    content: `
-The \`@repoatlasdev/github-action\` allows you to automatically generate and maintain \`PROJECT_STRUCTURE.md\` and \`MERMAID.md\` files in your GitHub repository.
+    content: `The \`@repoatlasdev/github-action\` allows you to automatically generate and maintain \`PROJECT_STRUCTURE.md\` and \`MERMAID.md\` files in your GitHub repository.
 
-### Workflow Example
+---
+
+### Quick Start
+
+Add this workflow to your repository at \`.github/workflows/structure.yml\`:
 
 \`\`\`yaml
 name: Generate Repository Structure
@@ -127,11 +273,53 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: repoatlasdev/github-action@v0.2.1
+      - uses: akshaykumar33/RepoAtlas@main
         with:
           auto_commit: true
           generate_mermaid: true
           output_file: 'PROJECT_STRUCTURE.md'
+\`\`\`
+
+---
+
+### Action Inputs
+
+| Input | Required | Default | Description |
+| :--- | :--- | :--- | :--- |
+| \`target_dir\` | No | \`.\` | Directory to scan |
+| \`output_file\` | No | \`PROJECT_STRUCTURE.md\` | Output file path |
+| \`theme\` | No | \`unicode\` | Rendering theme |
+| \`icons\` | No | \`emoji\` | Icon pack |
+| \`max_depth\` | No | \`10\` | Max recursion depth |
+| \`generate_mermaid\` | No | \`false\` | Also generate Mermaid diagram |
+| \`auto_commit\` | No | \`false\` | Auto-commit generated files |
+| \`commit_message\` | No | \`docs: update project structure\` | Commit message |
+
+---
+
+### Advanced: Multiple Output Formats
+
+\`\`\`yaml
+- uses: akshaykumar33/RepoAtlas@main
+  with:
+    theme: 'material'
+    icons: 'vscode'
+    max_depth: '6'
+    output_file: 'docs/STRUCTURE.md'
+    generate_mermaid: 'true'
+    auto_commit: 'true'
+    commit_message: 'docs(ci): auto-update project structure'
+\`\`\`
+
+---
+
+### Permissions
+
+The action requires **write permissions** to commit files. Add this to your workflow:
+
+\`\`\`yaml
+permissions:
+  contents: write
 \`\`\`
 `,
   },
@@ -143,24 +331,31 @@ jobs:
       'Step-by-step procedures for building, releasing, and publishing RepoAtlas packages.',
     readingTime: '3 min read',
     lastUpdated: 'July 22, 2026',
-    content: `
-RepoAtlas packages are distributed across **npm** (core engine packages) and **Visual Studio Marketplace** (VS Code extension).
+    content: `RepoAtlas packages are distributed across **npm** (core engine packages) and the **Visual Studio Code Marketplace** (VS Code extension).
 
-### 📦 1. npm Package Publishing (@repoatlasdev/*)
+---
 
-#### Automated Publishing via GitHub Actions
-Add your \`NPM_TOKEN\` to GitHub Repository Secrets. Whenever code is merged to \`main\` with a version bump or Changeset, GitHub Actions automatically publishes all packages:
-- \`@repoatlasdev/core\`
-- \`@repoatlasdev/renderers\`
-- \`@repoatlasdev/exporters\`
-- \`@repoatlasdev/icons\`
-- \`@repoatlasdev/config\`
-- \`@repoatlasdev/detector\`
-- \`@repoatlasdev/utils\`
-- \`@repoatlasdev/cli\`
+### npm Package Publishing
 
-#### Manual Terminal Publishing
-To publish updated packages directly from terminal:
+#### Automated (GitHub Actions — Recommended)
+
+Add your \`NPM_TOKEN\` to GitHub Repository Secrets. When code merges to \`main\` with a Changeset version bump, GitHub Actions automatically publishes all packages.
+
+**Published packages:**
+
+| Package | Registry |
+| :--- | :--- |
+| \`@repoatlasdev/core\` | npm |
+| \`@repoatlasdev/renderers\` | npm |
+| \`@repoatlasdev/exporters\` | npm |
+| \`@repoatlasdev/icons\` | npm |
+| \`@repoatlasdev/config\` | npm |
+| \`@repoatlasdev/detector\` | npm |
+| \`@repoatlasdev/utils\` | npm |
+| \`@repoatlasdev/cli\` | npm |
+
+#### Manual Publishing
+
 \`\`\`bash
 pnpm build
 pnpm publish -r --access public --no-git-checks
@@ -168,21 +363,38 @@ pnpm publish -r --access public --no-git-checks
 
 ---
 
-### 🔌 2. VS Code Extension Publishing (codeBeyond / repo-atlas)
+### VS Code Extension Publishing
 
-The VS Code Extension is packaged into a \`.vsix\` installer file:
+The VS Code Extension is published **manually** via the [Marketplace web portal](https://marketplace.visualstudio.com/manage/publishers/repo-atlas).
+
+#### Build & Package
 
 \`\`\`bash
-# Build & package .vsix bundle
-pnpm --filter repo-atlas build
+pnpm --filter repo-atlas-vscode build
 cd apps/vscode
-npx -y @vscode/vsce package --no-dependencies --out repo-atlas-0.2.1.vsix
+npx -y @vscode/vsce package --no-dependencies --out repo-atlas-<version>.vsix
 \`\`\`
 
-#### Web Upload to Marketplace:
-1. Navigate to [Visual Studio Marketplace Manager](https://marketplace.visualstudio.com/manage/publishers/repo-atlas).
-2. Click **+ New extension** ➔ **Visual Studio Code**.
-3. Drag & drop the \`repo-atlas-0.2.1.vsix\` package to upload!
+#### Upload to Marketplace
+
+1. Go to the [Marketplace Manager](https://marketplace.visualstudio.com/manage/publishers/repo-atlas)
+2. Click **⋮** next to the extension → **Update**
+3. Select your \`.vsix\` file and upload
+
+---
+
+### Version Bumping with Changesets
+
+\`\`\`bash
+# Create a changeset
+pnpm changeset
+
+# Apply version bumps
+pnpm changeset version
+
+# Commit and push
+git add . && git commit -m "chore: version packages" && git push
+\`\`\`
 `,
   },
 };

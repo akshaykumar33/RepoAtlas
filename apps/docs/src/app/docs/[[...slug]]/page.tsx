@@ -1,5 +1,6 @@
 import { CodeBlock } from '@/components/code-block';
 import { DocActions } from '@/components/doc-actions';
+import { MarkdownRenderer } from '@/components/markdown-renderer';
 import { DOCS_DATA } from '@/data/docs-content';
 import {
   ArrowLeft,
@@ -225,8 +226,8 @@ export default function DocsPage({ params }: { params: { slug?: string[] } }) {
           )}
 
           {/* Document Body */}
-          <div className="prose dark:prose-invert max-w-none text-sm leading-relaxed space-y-4">
-            <div className="whitespace-pre-wrap font-sans leading-relaxed">{doc.content}</div>
+          <div className="max-w-none">
+            <MarkdownRenderer content={doc.content} />
           </div>
 
           {/* Pagination Navigation */}
