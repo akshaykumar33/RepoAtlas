@@ -280,6 +280,43 @@ importers:
         specifier: ^1.4.0
         version: 1.6.1(@types/node@20.19.43)(terser@5.49.0)
 
+  packages/github-action:
+    dependencies:
+      '@repo-atlas/config':
+        specifier: workspace:*
+        version: link:../config
+      '@repo-atlas/core':
+        specifier: workspace:*
+        version: link:../core
+      '@repo-atlas/detector':
+        specifier: workspace:*
+        version: link:../detector
+      '@repo-atlas/exporters':
+        specifier: workspace:*
+        version: link:../exporters
+      '@repo-atlas/icons':
+        specifier: workspace:*
+        version: link:../icons
+      '@repo-atlas/renderers':
+        specifier: workspace:*
+        version: link:../renderers
+      '@repo-atlas/utils':
+        specifier: workspace:*
+        version: link:../utils
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.0
+        version: 20.19.43
+      tsup:
+        specifier: ^8.0.2
+        version: 8.5.1(jiti@1.21.7)(postcss@8.5.22)(typescript@5.9.3)(yaml@2.9.0)
+      typescript:
+        specifier: ^5.4.2
+        version: 5.9.3
+      vitest:
+        specifier: ^1.4.0
+        version: 1.6.1(@types/node@20.19.43)(terser@5.49.0)
+
   packages/icons:
     dependencies:
       '@repo-atlas/utils':
