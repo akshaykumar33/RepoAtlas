@@ -1,7 +1,7 @@
 {
-  "name": "@repo-atlas/core",
+  "name": "@repo-atlas/detector",
   "version": "0.1.0",
-  "description": "Core scanner and tree data model engine for RepoAtlas",
+  "description": "Project type, framework, monorepo, and tool detector for RepoAtlas",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -23,9 +23,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@repo-atlas/detector": "workspace:*",
-    "@repo-atlas/utils": "workspace:*",
-    "ignore": "^6.0.2"
+    "@repo-atlas/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

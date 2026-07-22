@@ -1,88 +1,150 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { getExtension, normalizePath, relativePath } from '@repo-atlas/utils';
-import { ScanOptions, TreeNode } from './types/tree';
+import { ProjectDetector } from '@repo-atlas/detector';
+import { normalizePath, relativePath } from '@repo-atlas/utils';
+import { IgnoreFilter } from './filter/ignore';
+import { MetadataResolver } from './metadata';
+import { SymlinkResolver } from './symlink';
 import { sortTreeNodes } from './tree';
-
-const DEFAULT_IGNORE = ['.git', 'node_modules', 'dist', '.turbo', '.DS_Store'];
+import { DirectoryMetadata, FileMetadata, ScanOptions, TreeNode } from './types/tree';
 
 export async function scanRepository(options: ScanOptions): Promise<TreeNode> {
   const rootDir = path.resolve(options.rootDir);
-  const ignorePatterns = options.ignorePatterns || DEFAULT_IGNORE;
   const maxDepth = options.maxDepth ?? Infinity;
   const includeHidden = options.includeHidden ?? false;
+  const respectGitIgnore = options.respectGitIgnore ?? true;
+  const followSymlinks = options.followSymlinks ?? false;
+  const detectProject = options.detectProject ?? true;
 
-  async function scanDir(currentPath: string, currentDepth: number): Promise<TreeNode> {
+  const ignoreFilter = new IgnoreFilter(options.ignorePatterns);
+  if (respectGitIgnore) {
+    await ignoreFilter.loadGitIgnore(rootDir);
+  }
+
+  const metadataResolver = new MetadataResolver();
+  const symlinkResolver = new SymlinkResolver();
+  const projectDetector = new ProjectDetector();
+
+  async function scanNode(currentPath: string, currentDepth: number): Promise<TreeNode | null> {
     const name = path.basename(currentPath) || currentPath;
     const relPath = relativePath(rootDir, currentPath) || '.';
-    const stats = await fs.stat(currentPath);
+    const normalizedPath = normalizePath(currentPath);
 
-    if (!stats.isDirectory()) {
+    // Hidden file filter check
+    if (!includeHidden && name.startsWith('.') && name !== '.' && name !== '..') {
+      return null;
+    }
+
+    const symlinkInfo = await symlinkResolver.resolve(currentPath);
+    let stats;
+    try {
+      stats =
+        followSymlinks && symlinkInfo.isSymlink
+          ? await fs.stat(currentPath)
+          : await fs.lstat(currentPath);
+    } catch {
+      return null;
+    }
+
+    const isDirectory = stats.isDirectory();
+
+    // Check ignore filter
+    if (ignoreFilter.isIgnored(relPath, isDirectory)) {
+      return null;
+    }
+
+    const id = relPath;
+
+    if (!isDirectory) {
+      const fileMeta: FileMetadata = await metadataResolver.resolveFileMetadata(currentPath, name);
+      if (symlinkInfo.isSymlink) {
+        fileMeta.isSymlink = true;
+        fileMeta.symlinkTarget = symlinkInfo.target;
+      }
+
       return {
+        id,
         name,
-        path: normalizePath(currentPath),
+        path: normalizedPath,
         relativePath: relPath,
-        type: 'file',
-        metadata: {
-          sizeBytes: stats.size,
-          extension: getExtension(name),
-          modifiedAt: stats.mtime,
-        },
+        type: symlinkInfo.isSymlink ? 'symlink' : 'file',
+        metadata: fileMeta,
       };
     }
 
+    // Directory handling
+    symlinkResolver.markVisited(currentPath);
+    if (respectGitIgnore) {
+      await ignoreFilter.loadGitIgnore(currentPath);
+    }
+
+    const dirMeta: DirectoryMetadata = await metadataResolver.resolveDirectoryMetadata(currentPath);
+    if (symlinkInfo.isSymlink) {
+      dirMeta.isSymlink = true;
+      dirMeta.symlinkTarget = symlinkInfo.target;
+    }
+
+    if (currentDepth === 0 && detectProject) {
+      dirMeta.projectInfo = await projectDetector.detect(currentPath);
+    }
+
     const node: TreeNode = {
+      id,
       name,
-      path: normalizePath(currentPath),
+      path: normalizedPath,
       relativePath: relPath,
-      type: 'directory',
+      type: symlinkInfo.isSymlink ? 'symlink' : 'directory',
       children: [],
-      metadata: {
-        modifiedAt: stats.mtime,
-      },
+      metadata: dirMeta,
     };
 
     if (currentDepth >= maxDepth) {
       return node;
     }
 
-    const entries = await fs.readdir(currentPath, { withFileTypes: true });
+    let entries: string[] = [];
+    try {
+      entries = await fs.readdir(currentPath);
+    } catch {
+      return node;
+    }
+
     const children: TreeNode[] = [];
+    let fileCount = 0;
+    let directoryCount = 0;
+    let totalSizeBytes = 0;
 
-    for (const entry of entries) {
-      const entryName = entry.name;
+    for (const entryName of entries) {
+      const childPath = path.join(currentPath, entryName);
+      const childNode = await scanNode(childPath, currentDepth + 1);
 
-      if (!includeHidden && entryName.startsWith('.') && entryName !== '.') {
-        continue;
-      }
-
-      if (ignorePatterns.includes(entryName)) {
-        continue;
-      }
-
-      const fullPath = path.join(currentPath, entryName);
-
-      if (entry.isDirectory()) {
-        children.push(await scanDir(fullPath, currentDepth + 1));
-      } else if (entry.isFile()) {
-        const fileStats = await fs.stat(fullPath);
-        children.push({
-          name: entryName,
-          path: normalizePath(fullPath),
-          relativePath: relativePath(rootDir, fullPath),
-          type: 'file',
-          metadata: {
-            sizeBytes: fileStats.size,
-            extension: getExtension(entryName),
-            modifiedAt: fileStats.mtime,
-          },
-        });
+      if (childNode) {
+        children.push(childNode);
+        if (childNode.type === 'directory') {
+          directoryCount++;
+          const meta = childNode.metadata as DirectoryMetadata;
+          fileCount += meta.fileCount ?? 0;
+          directoryCount += meta.directoryCount ?? 0;
+          totalSizeBytes += meta.totalSizeBytes ?? 0;
+        } else {
+          fileCount++;
+          const meta = childNode.metadata as FileMetadata;
+          totalSizeBytes += meta.sizeBytes ?? 0;
+        }
       }
     }
 
     node.children = sortTreeNodes(children);
+    (node.metadata as DirectoryMetadata).fileCount = fileCount;
+    (node.metadata as DirectoryMetadata).directoryCount = directoryCount;
+    (node.metadata as DirectoryMetadata).totalSizeBytes = totalSizeBytes;
+
     return node;
   }
 
-  return scanDir(rootDir, 0);
+  const result = await scanNode(rootDir, 0);
+  if (!result) {
+    throw new Error(`Failed to scan root directory at '${rootDir}'`);
+  }
+  return result;
 }

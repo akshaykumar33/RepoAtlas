@@ -1,25 +1,46 @@
+import { ProjectInfo } from '@repo-atlas/detector';
+
 export type NodeType = 'file' | 'directory' | 'symlink';
 
-export interface TreeMetadata {
-  sizeBytes?: number;
-  extension?: string;
+export interface FileMetadata {
+  sizeBytes: number;
+  extension: string;
+  modifiedAt: string;
+  createdAt?: string;
+  isSymlink?: boolean;
+  symlinkTarget?: string;
   isIgnored?: boolean;
-  modifiedAt?: Date;
-  custom?: Record<string, unknown>;
+}
+
+export interface DirectoryMetadata {
+  modifiedAt: string;
+  fileCount?: number;
+  directoryCount?: number;
+  totalSizeBytes?: number;
+  projectInfo?: ProjectInfo;
+  isSymlink?: boolean;
+  symlinkTarget?: string;
+  isIgnored?: boolean;
 }
 
 export interface TreeNode {
+  id: string;
   name: string;
   path: string;
   relativePath: string;
   type: NodeType;
   children?: TreeNode[];
-  metadata?: TreeMetadata;
+  metadata: FileMetadata | DirectoryMetadata;
 }
 
 export interface ScanOptions {
   rootDir: string;
   maxDepth?: number;
   ignorePatterns?: string[];
+  includePatterns?: string[];
+  excludePatterns?: string[];
   includeHidden?: boolean;
+  respectGitIgnore?: boolean;
+  followSymlinks?: boolean;
+  detectProject?: boolean;
 }

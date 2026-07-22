@@ -1,4 +1,4 @@
-import { TreeNode } from '@repo-atlas/core';
+import { DirectoryMetadata, FileMetadata, TreeNode } from '@repo-atlas/core';
 import { formatBytes } from '@repo-atlas/utils';
 import { RenderOptions, RenderedOutput, RendererPlugin } from '../types';
 
@@ -18,8 +18,14 @@ export const asciiRendererPlugin: RendererPlugin = {
         const nextIndent = indent + (isLast ? '    ' : '|   ');
 
         let label = child.name;
-        if (options?.showSize && child.metadata?.sizeBytes !== undefined) {
-          label += ` (${formatBytes(child.metadata.sizeBytes)})`;
+        if (options?.showSize) {
+          const size =
+            child.type === 'file'
+              ? (child.metadata as FileMetadata)?.sizeBytes
+              : (child.metadata as DirectoryMetadata)?.totalSizeBytes;
+          if (size !== undefined) {
+            label += ` (${formatBytes(size)})`;
+          }
         }
 
         lines.push(`${indent}${connector}${label}`);
